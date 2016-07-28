@@ -1,16 +1,20 @@
 #MyEclipse Hibernate Properties
-#Sun Jul 10 19:10:11 CST 2016
-genVersionTag=false
-genAnnotations=false
-configFile=/InnovationSharing/src/applicationContext.xml
-reStrategyClass=
-sessionFactoryId=sessionFactory
+#Wed Jul 27 19:56:29 CST 2016
+genBasicCompId=true
+sessionFactoryName=com.yonyou.test.form.HibernateSessionFactory
 profile=
-detectM2M=false
-genBasicCompId=false
-keyGenerator=
-createConfigFile=true
+daoSFId=
+jndiPath=
+detectM2M=true
+reStrategyClass=
+detectO2O=true
+springDaoFile=
+useJavaTypes=false
+keyGenerator=identity
+genVersionTag=true
+sessionFactoryId=sessionFactory
 basePersistenceClass=
-detectO2O=false
-useJavaTypes=true
-reSettingsFile=
+genAnnotations=true
+reSettingsFile=/InnovationSharing/hibernate.reveng.xml
+configFile=/InnovationSharing/src/applicationContext.xml
+createConfigFile=true
