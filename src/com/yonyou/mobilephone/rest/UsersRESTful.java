@@ -25,7 +25,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.yonyou.users.form.Users;
+import com.yonyou.user.form.User;
 import com.yonyou.util.HibernateSessionFactoryUtil;
 
 @Path("/mobilephone/users") 
@@ -48,20 +48,20 @@ public class UsersRESTful {
 			
 			
 			   //from后面是对象，不是表名
-			   String hql="from Users as users where users."+request.getParameter("loginType")+"=:identifier and password=:password";//使用命名参数，推荐使用，易读。
+			   String hql="from User as user where user."+request.getParameter("loginType")+"=:identifier and password=:password";//使用命名参数，推荐使用，易读。
 			   Query query=session.createQuery(hql);
 			   query.setString("identifier", request.getParameter("identifier"));
 			   query.setString("password", request.getParameter("password"));
 			   
 			   @SuppressWarnings("unchecked")
-			   List<Users> list=query.list();
+			   List<User> list=query.list();
 			   
 			  
 			   if(list.size()==1){
 				   
 				   return_map.put("message","success");
 				   return_map.put("code","1");
-				   Users user = list.get(0);
+				   User user = list.get(0);
 				   content_map.put("userID",user.getUserId());
 				   content_map.put("userName", user.getUserName());
 				   content_map.put("country", user.getCountry());

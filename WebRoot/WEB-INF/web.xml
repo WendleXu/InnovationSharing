@@ -16,6 +16,13 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>classpath:applicationContext.xml</param-value>
   </context-param>
+  <context-param>  
+        <param-name>webAppRootKey</param-name>  
+        <param-value>csc2.root</param-value>  
+  </context-param>
+  <listener>
+    <listener-class>com.yonyou.listener.MyContextLoaderListener</listener-class>
+  </listener>
   <filter>
     <filter-name>struts2</filter-name>
     <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>

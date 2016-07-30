@@ -38,13 +38,10 @@
 		</property>
 		<property name="annotatedClasses">
 			<list>
-				<value>com.yonyou.users.form.Ideas</value>
-				<value>com.yonyou.users.form.IdeasUpdates</value>
-				<value>com.yonyou.users.form.IdeasImagesMap</value>
-				<value>com.yonyou.users.form.IdeasDiscussion</value>
-				<value>com.yonyou.users.form.Projects</value>
-				<value>com.yonyou.users.form.Users</value>
-				<value>com.yonyou.users.form.ProjectsImagesMap</value>
+				<value>com.yonyou.user.form.User</value>
+				<value>com.yonyou.idea.form.Idea</value>
+				<value>com.yonyou.idea.form.IdeaTagMap</value>
+				<value>com.yonyou.tag.form.Tag</value>
 			</list>
 		</property></bean>
 	<bean id="transactionManager"
