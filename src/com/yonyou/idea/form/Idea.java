@@ -18,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.yonyou.discussion.IdeaDiscussion;
+import com.yonyou.image.form.IdeaImage;
 import com.yonyou.user.form.User;
 
 /**
@@ -43,9 +45,9 @@ public class Idea implements java.io.Serializable {
 	private Date lastUpdateTime;
 	private String country;
 	private Set<IdeaTagMap> ideaTagMaps = new HashSet<IdeaTagMap>(0);
-	/*private Set<Ideaimagemap> ideaimagemaps = new HashSet<Ideaimagemap>(0);
-	private Set<Ideadiscussion> ideadiscussions = new HashSet<Ideadiscussion>(0);
-	private Set<Ideaupdaterecord> ideaupdaterecords = new HashSet<Ideaupdaterecord>(
+	private Set<IdeaImage> ideaImages = new HashSet<IdeaImage>(0);
+	private Set<IdeaDiscussion> ideaDiscussions = new HashSet<IdeaDiscussion>(0);
+	/*private Set<Ideaupdaterecord> ideaupdaterecords = new HashSet<Ideaupdaterecord>(
 			0);*/
 
 	// Constructors
@@ -212,31 +214,31 @@ public class Idea implements java.io.Serializable {
 		this.ideaTagMaps = ideaTagMaps;
 	}
 
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "idea")
+	public Set<IdeaImage> getIdeaImages() {
+		return this.ideaImages;
+	}
+
+	public void setIdeaImages(Set<IdeaImage> ideaImages) {
+		this.ideaImages = ideaImages;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "idea")
+	public Set<IdeaDiscussion> getIdeaDiscussions() {
+		return this.ideaDiscussions;
+	}
+
+	public void setIdeaDiscussions(Set<IdeaDiscussion> ideaDiscussions) {
+		this.ideaDiscussions = ideaDiscussions;
+	}
+
 	/*@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "idea")
-	public Set<Ideaimagemap> getIdeaimagemaps() {
-		return this.ideaimagemaps;
-	}
-
-	public void setIdeaimagemaps(Set<Ideaimagemap> ideaimagemaps) {
-		this.ideaimagemaps = ideaimagemaps;
-	}
-
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "idea")
-	public Set<Ideadiscussion> getIdeadiscussions() {
-		return this.ideadiscussions;
-	}
-
-	public void setIdeadiscussions(Set<Ideadiscussion> ideadiscussions) {
-		this.ideadiscussions = ideadiscussions;
-	}
-
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "idea")
 	public Set<Ideaupdaterecord> getIdeaupdaterecords() {
 		return this.ideaupdaterecords;
 	}
 
 	public void setIdeaupdaterecords(Set<Ideaupdaterecord> ideaupdaterecords) {
 		this.ideaupdaterecords = ideaupdaterecords;
-	}*/
-
+	}
+*/
 }

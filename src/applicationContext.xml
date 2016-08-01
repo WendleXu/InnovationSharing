@@ -10,7 +10,7 @@
   	class="com.mchange.v2.c3p0.ComboPooledDataSource">
   	
 		<property name="driverClass" value="com.mysql.jdbc.Driver"/>
-		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/innoShare"/>
+		<property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/innoshare"/>
 		<property name="user" value="root"/>
 		<property name="password" value="namlj3"/>
 		<property name="maxPoolSize" value="40"/>
@@ -42,7 +42,9 @@
 				<value>com.yonyou.idea.form.Idea</value>
 				<value>com.yonyou.idea.form.IdeaTagMap</value>
 				<value>com.yonyou.tag.form.Tag</value>
-			</list>
+				<value>com.yonyou.image.form.IdeaImage</value>
+				<value>com.yonyou.discussion.IdeaDiscussion</value>
+				<value>com.yonyou.idea.form.IdeaUpdateRecord</value></list>
 		</property></bean>
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
