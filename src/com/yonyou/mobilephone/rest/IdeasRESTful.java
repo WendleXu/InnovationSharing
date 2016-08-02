@@ -30,7 +30,10 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.ejb.criteria.expression.function.LengthFunction;
 import org.springframework.web.bind.annotation.RequestBody;
+
+
 
 
 
@@ -39,6 +42,7 @@ import com.yonyou.idea.form.Idea;
 import com.yonyou.idea.form.IdeaTagMap;
 import com.yonyou.idea.form.IdeaUpdateRecord;
 import com.yonyou.image.form.IdeaImage;
+import com.yonyou.record.form.IdeaFaviourRecord;
 import com.yonyou.tag.form.Person;
 import com.yonyou.tag.form.Tag;
 import com.yonyou.user.form.User;
@@ -397,11 +401,42 @@ public class IdeasRESTful {
 			if(m.get("updateWay").equals("add"))
 			{
 				idea.setFaviourCount(idea.getFaviourCount()+1);
+				
+				Criteria c=session.createCriteria(IdeaFaviourRecord.class);
+				c.add(Restrictions.eq("ideaID", Integer.parseInt(m.get("ideaID").toString())));
+				c.add(Restrictions.eq("userID", Integer.parseInt(m.get("userID").toString())));
+				List <IdeaFaviourRecord> ideaFaviourRecords = c.list();
+				if(ideaFaviourRecords.size()>0)
+				{
+					IdeaFaviourRecord ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
+					ideaFaviourRecord.setDeleteFlag(0);
+					ideaFaviourRecord.setLastUpdateTime(new Date());
+					ideaFaviourRecord.setIsFavour(1);
+					session.update(ideaFaviourRecord);
+				}
+				IdeaFaviourRecord ideaFaviourRecord = new IdeaFaviourRecord();
+				
+				ideaFaviourRecord.setDeleteFlag(0);
+				ideaFaviourRecord.setCreateTime(new Date());
+				ideaFaviourRecord.setIsFavour(1);
+				ideaFaviourRecord.setIdeaID(Integer.parseInt(m.get("ideaID").toString()));
+				ideaFaviourRecord.setUserID(Integer.parseInt(m.get("userID").toString()));
+				session.save(ideaFaviourRecord);
+				
+				
 			}else{
 				if(idea.getFaviourCount()>0)
 				{
 					idea.setFaviourCount(idea.getFaviourCount()-1);
 				}				
+				Criteria c=session.createCriteria(Idea.class);
+				c.add(Restrictions.eq("ideaID", m.get("ideaID").toString()));
+				c.add(Restrictions.eq("userID", m.get("userID").toString()));
+				IdeaFaviourRecord ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
+				ideaFaviourRecord.setDeleteFlag(1);
+				ideaFaviourRecord.setLastUpdateTime(new Date());
+				ideaFaviourRecord.setIsFavour(0);
+				session.update(ideaFaviourRecord);
 			}
 			
 			
@@ -410,6 +445,94 @@ public class IdeasRESTful {
 			returnMap.put("message","success");
 			returnMap.put("code","1");
 			returnMap.put("content", "");
+			
+				   
+		}finally{
+				
+				session.getTransaction().commit();
+		}
+			
+		
+		JSONObject jsonObject = new JSONObject();
+		jsonObject= JSONObject.fromObject(returnMap);
+
+	    return  jsonObject.toString();  
+	}
+	
+	@GET
+	@Path("/{ideaID}/faviour")
+	public String get_isFaviour_info(@Context HttpServletRequest request) {  
+		
+		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
+		session.beginTransaction();
+
+		
+		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
+		
+		try{
+			
+			Idea idea = (Idea) session.get(Idea.class,Integer.parseInt(request.getParameter("ideaID")));
+			
+			Criteria c=session.createCriteria(IdeaFaviourRecord.class);
+			c.add(Restrictions.eq("ideaID", Integer.parseInt(request.getParameter("ideaID").toString())));
+			c.add(Restrictions.eq("userID", Integer.parseInt(request.getParameter("userID").toString())));
+			List <IdeaFaviourRecord> ideaFaviourRecords = c.list();
+			if(ideaFaviourRecords.size()>0 && ideaFaviourRecords.get(0).getDeleteFlag()==0 && ideaFaviourRecords.get(0).getIsFavour()==1)
+			{
+				contentMap.put("isFaviour", 1);
+			}else{
+				contentMap.put("isFaviour", 0);
+			}
+			
+			
+			/*if(m.get("updateWay").equals("add"))
+			{
+				idea.setFaviourCount(idea.getFaviourCount()+1);
+				
+				Criteria c=session.createCriteria(Idea.class);
+				c.add(Restrictions.eq("ideaID", m.get("ideaID").toString()));
+				c.add(Restrictions.eq("userID", m.get("userID").toString()));
+				List <IdeaFaviourRecord> ideaFaviourRecords = c.list();
+				if(ideaFaviourRecords.size()>0)
+				{
+					IdeaFaviourRecord ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
+					ideaFaviourRecord.setDeleteFlag(0);
+					ideaFaviourRecord.setLastUpdateTime(new Date());
+					ideaFaviourRecord.setIsFavour(1);
+					session.update(ideaFaviourRecord);
+				}
+				IdeaFaviourRecord ideaFaviourRecord = new IdeaFaviourRecord();
+				
+				ideaFaviourRecord.setDeleteFlag(0);
+				ideaFaviourRecord.setCreateTime(new Date());
+				ideaFaviourRecord.setIsFavour(1);
+				ideaFaviourRecord.setIdeaID(Integer.parseInt(m.get("ideaID").toString()));
+				ideaFaviourRecord.setUserID(Integer.parseInt(m.get("userID").toString()));
+				session.save(ideaFaviourRecord);
+				
+				
+			}else{
+				if(idea.getFaviourCount()>0)
+				{
+					idea.setFaviourCount(idea.getFaviourCount()-1);
+				}				
+				Criteria c=session.createCriteria(Idea.class);
+				c.add(Restrictions.eq("ideaID", m.get("ideaID").toString()));
+				c.add(Restrictions.eq("userID", m.get("userID").toString()));
+				IdeaFaviourRecord ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
+				ideaFaviourRecord.setDeleteFlag(1);
+				ideaFaviourRecord.setLastUpdateTime(new Date());
+				ideaFaviourRecord.setIsFavour(0);
+				session.update(ideaFaviourRecord);
+			}
+			
+			
+			session.save(idea);*/
+			
+			returnMap.put("message","success");
+			returnMap.put("code","1");
+			returnMap.put("content", contentMap);
 			
 				   
 		}finally{

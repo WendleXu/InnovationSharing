@@ -1,6 +1,7 @@
 package com.yonyou.mobilephone.rest;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +25,7 @@ import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsDateJsonBeanProcessor;
 import net.sf.json.util.PropertyFilter;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -59,7 +61,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 
+
+
+
+
+import com.mchange.v2.codegen.bean.BeangenUtils;
 import com.yonyou.discussion.IdeaDiscussion;
+import com.yonyou.discussion.IdeaDiscussionCopy;
 import com.yonyou.idea.form.Idea;
 import com.yonyou.idea.form.IdeaTagMap;
 import com.yonyou.image.form.IdeaImage;
@@ -116,7 +124,7 @@ public class DiscussionsRESTful {
 	
 	@GET  
 	@Path("/idea/{ideaID}")  
-	public String getDiscussionBy_ideaID(@PathParam ("ideaID") int ideaID,@Context HttpServletRequest request) {  
+	public String getDiscussionBy_ideaID(@PathParam ("ideaID") int ideaID,@Context HttpServletRequest request) throws IllegalAccessException, InvocationTargetException {  
   
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
@@ -147,7 +155,16 @@ public class DiscussionsRESTful {
 					Map<String,Object> ideaDiscussionMap = new LinkedHashMap<String,Object>();
 					Map<String,Object> ideaFatherDiscussionMap = new LinkedHashMap<String,Object>();
 					System.out.println(ideaTopDiscussionList.get(i).getDiscussionId()+"@@@@@@@@@@@@@@@");
-					ideaFatherDiscussionMap.put("father", ideaTopDiscussionList.get(i));
+					IdeaDiscussionCopy ideaDiscussionCopyFather = new IdeaDiscussionCopy();
+					
+					
+					BeanUtils.copyProperties(ideaDiscussionCopyFather, ideaTopDiscussionList.get(i));					
+					ideaDiscussionCopyFather.setCreatorPortraitUrl(ideaTopDiscussionList.get(i).getCreator().getPortraitUrl());
+					ideaDiscussionCopyFather.setCreatorName(ideaTopDiscussionList.get(i).getCreator().getUserName());
+					ideaDiscussionCopyFather.setCreatorID(ideaTopDiscussionList.get(i).getCreator().getUserId());
+					ideaDiscussionCopyFather.setIdeaID(ideaTopDiscussionList.get(i).getIdea().getIdeaID());
+					
+					ideaFatherDiscussionMap.put("father", ideaDiscussionCopyFather);
 					
 					c=session.createCriteria(IdeaDiscussion.class);
 					c.add(Restrictions.eq("idea",idea));
@@ -155,10 +172,23 @@ public class DiscussionsRESTful {
 					c.addOrder(Order.desc("createTime"));
 					
 					List<IdeaDiscussion> ideaSonDiscussionList = new ArrayList<IdeaDiscussion>();
+					List<IdeaDiscussionCopy> ideaSonDiscussionListCopy = new ArrayList<IdeaDiscussionCopy>();
 					ideaSonDiscussionList=c.list();
-					//System.out.println(c.list().size()+"@@@@@@@@@@@"+ideaTopDiscussionList.get(i).getFatherID());
+					for(int j=0;j<ideaSonDiscussionList.size();j++)
+					{
+						IdeaDiscussionCopy ideaDiscussionCopySon = new IdeaDiscussionCopy();
+						BeanUtils.copyProperties(ideaDiscussionCopySon, ideaSonDiscussionList.get(j));					
+						ideaDiscussionCopySon.setCreatorPortraitUrl(ideaSonDiscussionList.get(j).getCreator().getPortraitUrl());
+						ideaDiscussionCopySon.setCreatorName(ideaSonDiscussionList.get(j).getCreator().getUserName());
+						ideaDiscussionCopySon.setCreatorID(ideaSonDiscussionList.get(j).getCreator().getUserId());
+						ideaDiscussionCopySon.setIdeaID(ideaSonDiscussionList.get(j).getIdea().getIdeaID());
+						ideaSonDiscussionListCopy.add(ideaDiscussionCopySon);
+					}
 					
-					ideaFatherDiscussionMap.put("son", ideaSonDiscussionList);
+					
+					
+					
+					ideaFatherDiscussionMap.put("son", ideaSonDiscussionListCopy);
 					
 					ideaDiscussionMap.put("discussion",ideaFatherDiscussionMap);
 					
