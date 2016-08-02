@@ -41,6 +41,9 @@ public class User implements java.io.Serializable {
 	private Date createTime;
 	private Date lastUpdateTime;
 	private String portraitUrl;
+	private Integer integral;
+	
+
 	private Set<Idea> ideas = new HashSet<Idea>(0);
 	/*private Set<Project> projects = new HashSet<Project>(0);
 	private Set<Ideadiscussion> ideadiscussions = new HashSet<Ideadiscussion>(0);
@@ -206,6 +209,15 @@ public class User implements java.io.Serializable {
 
 	public void setPortraitUrl(String portraitUrl) {
 		this.portraitUrl = portraitUrl;
+	}
+	
+	@Column(name = "integral")
+	public Integer getIntegral() {
+		return integral;
+	}
+
+	public void setIntegral(Integer integral) {
+		this.integral = integral;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")

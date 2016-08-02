@@ -87,14 +87,14 @@ public class DiscussionsRESTful {
 				ideaDiscussion.setDiscussionContent(m.get("discussionContent").toString());
 				ideaDiscussion.setCreateTime(new Date());
 				
-				User user = (User) session.get(User.class, (Integer)m.get("creatorID"));
+				User user = (User) session.get(User.class, Integer.parseInt(m.get("creatorID").toString()));
 				
 				ideaDiscussion.setCreator(user);
 				ideaDiscussion.setDeleteFag(0);
-				ideaDiscussion.setFatherID((Integer)m.get("fatherID"));
+				ideaDiscussion.setFatherID(Integer.parseInt(m.get("fatherID").toString()));
 				ideaDiscussion.setFaviourCount(0);
 				
-				Idea idea = (Idea) session.get(Idea.class, (Integer)m.get("ideaID"));
+				Idea idea = (Idea) session.get(Idea.class, Integer.parseInt(m.get("ideaID").toString()));
 				ideaDiscussion.setIdea(idea);
 			
 				session.save(ideaDiscussion);
@@ -133,18 +133,35 @@ public class DiscussionsRESTful {
 				c.add(Restrictions.eq("idea",idea));
 				c.add(Restrictions.eq("fatherID",0));
 				c.addOrder(Order.desc("createTime"));
-				List<IdeaDiscussion> ideaTopDiscussionList=c.list();
+				
 				List<Map<String,Object>> ideaAllDiscussionList = new ArrayList<Map<String,Object>>();
-				Map<String,Object> ideaDiscussionMap = new LinkedHashMap<String,Object>();
+				List<IdeaDiscussion> ideaTopDiscussionList= new ArrayList<IdeaDiscussion>();
+				ideaTopDiscussionList=c.list();
+							
+				System.out.println(ideaTopDiscussionList.size());
+				
+				
+				
 				for(int i=0;i<ideaTopDiscussionList.size();i++)
 				{
-					ideaDiscussionMap.put("top", ideaTopDiscussionList.get(i));
+					Map<String,Object> ideaDiscussionMap = new LinkedHashMap<String,Object>();
+					Map<String,Object> ideaFatherDiscussionMap = new LinkedHashMap<String,Object>();
+					System.out.println(ideaTopDiscussionList.get(i).getDiscussionId()+"@@@@@@@@@@@@@@@");
+					ideaFatherDiscussionMap.put("father", ideaTopDiscussionList.get(i));
+					
 					c=session.createCriteria(IdeaDiscussion.class);
 					c.add(Restrictions.eq("idea",idea));
-					c.add(Restrictions.eq("fatherID",ideaTopDiscussionList.get(i).getFatherID()));
+					c.add(Restrictions.eq("fatherID",ideaTopDiscussionList.get(i).getDiscussionId()));
 					c.addOrder(Order.desc("createTime"));
-					List<IdeaDiscussion> ideaSonDiscussionList=c.list();
-					ideaDiscussionMap.put("son", ideaSonDiscussionList);
+					
+					List<IdeaDiscussion> ideaSonDiscussionList = new ArrayList<IdeaDiscussion>();
+					ideaSonDiscussionList=c.list();
+					//System.out.println(c.list().size()+"@@@@@@@@@@@"+ideaTopDiscussionList.get(i).getFatherID());
+					
+					ideaFatherDiscussionMap.put("son", ideaSonDiscussionList);
+					
+					ideaDiscussionMap.put("discussion",ideaFatherDiscussionMap);
+					
 					ideaAllDiscussionList.add(ideaDiscussionMap);
 				}
 

@@ -484,8 +484,8 @@ public class IdeasRESTful {
 				User user = new User();
 				IdeaUpdateRecord  ideaUpdateRecord = new IdeaUpdateRecord();
 
-				user = (User) session.get(User.class, (Integer)m.get("userID"));
-				idea = (Idea) session.get(Idea.class, (Integer)m.get("ideaID"));
+				user = (User) session.get(User.class, Integer.parseInt(m.get("userID").toString()));
+				idea = (Idea) session.get(Idea.class, Integer.parseInt(m.get("ideaID").toString()));
 				
 				ideaUpdateRecord.setCreateTime(new Date());
 				ideaUpdateRecord.setDeleteFlag(0);
