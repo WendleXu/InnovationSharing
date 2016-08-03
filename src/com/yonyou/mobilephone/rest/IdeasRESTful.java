@@ -180,7 +180,6 @@ public class IdeasRESTful {
 			c.addOrder(Order.desc("createTime"));
 			
 			c.setProjection(Projections.rowCount());
-			int totalRecord=Integer.valueOf(c.uniqueResult().toString());
 			c.setProjection(null);
 
 			c.setFirstResult((10)*(Integer.parseInt(request.getParameter("pageNo"))-1));
@@ -352,10 +351,7 @@ public class IdeasRESTful {
 		
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
-		
-		
-		
-			
+
 		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
 		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
 		try{
@@ -396,42 +392,43 @@ public class IdeasRESTful {
 		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
 		try{
 			
-			Idea idea = (Idea) session.get(Idea.class,  (Integer)m.get("ideaID"));
+			Idea idea = (Idea) session.get(Idea.class,Integer.parseInt(m.get("ideaID").toString()));
 			
-			if(m.get("updateWay").equals("add"))
-			{
+			if(m.get("updateWay").equals("add")){
 				idea.setFaviourCount(idea.getFaviourCount()+1);
 				
 				Criteria c=session.createCriteria(IdeaFaviourRecord.class);
 				c.add(Restrictions.eq("ideaID", Integer.parseInt(m.get("ideaID").toString())));
 				c.add(Restrictions.eq("userID", Integer.parseInt(m.get("userID").toString())));
 				List <IdeaFaviourRecord> ideaFaviourRecords = c.list();
-				if(ideaFaviourRecords.size()>0)
-				{
+				if(ideaFaviourRecords.size()>0){
 					IdeaFaviourRecord ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
 					ideaFaviourRecord.setDeleteFlag(0);
 					ideaFaviourRecord.setLastUpdateTime(new Date());
 					ideaFaviourRecord.setIsFavour(1);
 					session.update(ideaFaviourRecord);
+				}else{
+					
+					IdeaFaviourRecord ideaFaviourRecord = new IdeaFaviourRecord();
+					
+					ideaFaviourRecord.setDeleteFlag(0);
+					ideaFaviourRecord.setCreateTime(new Date());
+					ideaFaviourRecord.setIsFavour(1);
+					ideaFaviourRecord.setIdeaID(Integer.parseInt(m.get("ideaID").toString()));
+					ideaFaviourRecord.setUserID(Integer.parseInt(m.get("userID").toString()));
+					session.save(ideaFaviourRecord);
+					
 				}
-				IdeaFaviourRecord ideaFaviourRecord = new IdeaFaviourRecord();
 				
-				ideaFaviourRecord.setDeleteFlag(0);
-				ideaFaviourRecord.setCreateTime(new Date());
-				ideaFaviourRecord.setIsFavour(1);
-				ideaFaviourRecord.setIdeaID(Integer.parseInt(m.get("ideaID").toString()));
-				ideaFaviourRecord.setUserID(Integer.parseInt(m.get("userID").toString()));
-				session.save(ideaFaviourRecord);
 				
 				
 			}else{
-				if(idea.getFaviourCount()>0)
-				{
+				if(idea.getFaviourCount()>0){
 					idea.setFaviourCount(idea.getFaviourCount()-1);
 				}				
 				Criteria c=session.createCriteria(Idea.class);
-				c.add(Restrictions.eq("ideaID", m.get("ideaID").toString()));
-				c.add(Restrictions.eq("userID", m.get("userID").toString()));
+				c.add(Restrictions.eq("ideaID",Integer.parseInt(m.get("ideaID").toString())));
+				c.add(Restrictions.eq("userID",Integer.parseInt(m.get("userID").toString())));
 				IdeaFaviourRecord ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
 				ideaFaviourRecord.setDeleteFlag(1);
 				ideaFaviourRecord.setLastUpdateTime(new Date());
@@ -483,58 +480,10 @@ public class IdeasRESTful {
 				contentMap.put("isFaviour", 1);
 			}else{
 				contentMap.put("isFaviour", 0);
-			}
-			
-			
-			/*if(m.get("updateWay").equals("add"))
-			{
-				idea.setFaviourCount(idea.getFaviourCount()+1);
-				
-				Criteria c=session.createCriteria(Idea.class);
-				c.add(Restrictions.eq("ideaID", m.get("ideaID").toString()));
-				c.add(Restrictions.eq("userID", m.get("userID").toString()));
-				List <IdeaFaviourRecord> ideaFaviourRecords = c.list();
-				if(ideaFaviourRecords.size()>0)
-				{
-					IdeaFaviourRecord ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
-					ideaFaviourRecord.setDeleteFlag(0);
-					ideaFaviourRecord.setLastUpdateTime(new Date());
-					ideaFaviourRecord.setIsFavour(1);
-					session.update(ideaFaviourRecord);
-				}
-				IdeaFaviourRecord ideaFaviourRecord = new IdeaFaviourRecord();
-				
-				ideaFaviourRecord.setDeleteFlag(0);
-				ideaFaviourRecord.setCreateTime(new Date());
-				ideaFaviourRecord.setIsFavour(1);
-				ideaFaviourRecord.setIdeaID(Integer.parseInt(m.get("ideaID").toString()));
-				ideaFaviourRecord.setUserID(Integer.parseInt(m.get("userID").toString()));
-				session.save(ideaFaviourRecord);
-				
-				
-			}else{
-				if(idea.getFaviourCount()>0)
-				{
-					idea.setFaviourCount(idea.getFaviourCount()-1);
-				}				
-				Criteria c=session.createCriteria(Idea.class);
-				c.add(Restrictions.eq("ideaID", m.get("ideaID").toString()));
-				c.add(Restrictions.eq("userID", m.get("userID").toString()));
-				IdeaFaviourRecord ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
-				ideaFaviourRecord.setDeleteFlag(1);
-				ideaFaviourRecord.setLastUpdateTime(new Date());
-				ideaFaviourRecord.setIsFavour(0);
-				session.update(ideaFaviourRecord);
-			}
-			
-			
-			session.save(idea);*/
-			
+			}			
 			returnMap.put("message","success");
 			returnMap.put("code","1");
-			returnMap.put("content", contentMap);
-			
-				   
+			returnMap.put("content", contentMap);				   
 		}finally{
 				
 				session.getTransaction().commit();

@@ -2,4 +2,8 @@
 <!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
 
 <hibernate-reverse-engineering>
+	<table name="discussionfaviourrecord" catalog="innoshare">
+		<column name="userID" property="userID"></column>
+		<column name="discussionID" property="discussionID"></column>
+	</table>
 </hibernate-reverse-engineering>

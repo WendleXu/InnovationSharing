@@ -18,7 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.yonyou.discussion.IdeaDiscussion;
+import com.yonyou.discussion.form.IdeaDiscussion;
 import com.yonyou.image.form.IdeaImage;
 import com.yonyou.user.form.User;
 

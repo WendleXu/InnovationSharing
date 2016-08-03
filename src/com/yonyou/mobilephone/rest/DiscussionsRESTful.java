@@ -65,12 +65,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 
+
+
+
+
 import com.mchange.v2.codegen.bean.BeangenUtils;
-import com.yonyou.discussion.IdeaDiscussion;
-import com.yonyou.discussion.IdeaDiscussionCopy;
+import com.yonyou.discussion.form.IdeaDiscussion;
+import com.yonyou.discussion.form.IdeaDiscussionCopy;
 import com.yonyou.idea.form.Idea;
 import com.yonyou.idea.form.IdeaTagMap;
 import com.yonyou.image.form.IdeaImage;
+import com.yonyou.record.form.DiscussionFaviourRecord;
+import com.yonyou.record.form.IdeaFaviourRecord;
 import com.yonyou.tag.form.Person;
 import com.yonyou.tag.form.Tag;
 import com.yonyou.user.form.User;
@@ -163,6 +169,18 @@ public class DiscussionsRESTful {
 					ideaDiscussionCopyFather.setCreatorName(ideaTopDiscussionList.get(i).getCreator().getUserName());
 					ideaDiscussionCopyFather.setCreatorID(ideaTopDiscussionList.get(i).getCreator().getUserId());
 					ideaDiscussionCopyFather.setIdeaID(ideaTopDiscussionList.get(i).getIdea().getIdeaID());
+					
+					c=session.createCriteria(DiscussionFaviourRecord.class);
+					c.add(Restrictions.eq("discussionID",ideaDiscussionCopyFather.getDiscussionId()));
+					c.add(Restrictions.eq("userID",Integer.parseInt(request.getParameter("userID"))));
+					c.add(Restrictions.eq("deleteFlag",0));
+					c.add(Restrictions.eq("isFavour",1));
+					
+					if(c.list().size()>0)
+					{
+						ideaDiscussionCopyFather.setIsFavour(1);
+					}
+					
 					
 					ideaFatherDiscussionMap.put("father", ideaDiscussionCopyFather);
 					
@@ -296,4 +314,87 @@ public class DiscussionsRESTful {
 		
 	    return  jsonObject.toString();  
 	}
+	
+	@PUT
+	@Path("/{discussionID}/faviour")
+	public String update_idea_faviour(@RequestBody Map<String,Object> m) {  
+		
+		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
+		session.beginTransaction();
+
+		
+		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
+		try{
+			
+			IdeaDiscussion ideaDiscussion = (IdeaDiscussion) session.get(IdeaDiscussion.class,  (Integer)m.get("discussionID"));
+			
+			if(m.get("updateWay").equals("add"))
+			{
+				ideaDiscussion.setFaviourCount(ideaDiscussion.getFaviourCount()+1);
+				
+				Criteria c=session.createCriteria(DiscussionFaviourRecord.class);
+				c.add(Restrictions.eq("discussionID", Integer.parseInt(m.get("discussionID").toString())));
+				c.add(Restrictions.eq("userID", Integer.parseInt(m.get("userID").toString())));
+				c.add(Restrictions.eq("discussionType", m.get("discussionType").toString()));
+				List <DiscussionFaviourRecord> discussionFaviourRecords = c.list();
+				if(discussionFaviourRecords.size()>0)
+				{
+					DiscussionFaviourRecord discussionFaviourRecord = (DiscussionFaviourRecord) c.list().get(0);
+					discussionFaviourRecord.setDeleteFlag(0);
+					discussionFaviourRecord.setLastUpdateTime(new Date());
+					discussionFaviourRecord.setIsFavour(1);
+					discussionFaviourRecord.setDiscussionType(m.get("discussionType").toString());
+					session.update(discussionFaviourRecord);
+				}else{
+					
+					DiscussionFaviourRecord discussionFaviourRecord = new DiscussionFaviourRecord();
+					
+					discussionFaviourRecord.setDeleteFlag(0);
+					discussionFaviourRecord.setCreateTime(new Date());
+					discussionFaviourRecord.setIsFavour(1);
+					discussionFaviourRecord.setDiscussionID(Integer.parseInt(m.get("discussionID").toString()));
+					discussionFaviourRecord.setUserID(Integer.parseInt(m.get("userID").toString()));
+					discussionFaviourRecord.setDiscussionType(m.get("discussionType").toString());
+					session.save(discussionFaviourRecord);
+					
+				}
+				
+				
+				
+			}else{
+				if(ideaDiscussion.getFaviourCount()>0){
+					ideaDiscussion.setFaviourCount(ideaDiscussion.getFaviourCount()-1);
+				}				
+				Criteria c=session.createCriteria(Idea.class);
+				c.add(Restrictions.eq("ideaID", m.get("ideaID").toString()));
+				c.add(Restrictions.eq("discussionID", m.get("discussionID").toString()));
+				c.add(Restrictions.eq("discussionType", Integer.parseInt(m.get("discussionType").toString())));
+				DiscussionFaviourRecord discussionFaviourRecord = (DiscussionFaviourRecord) c.list().get(0);
+				discussionFaviourRecord.setDeleteFlag(1);
+				discussionFaviourRecord.setLastUpdateTime(new Date());
+				discussionFaviourRecord.setIsFavour(0);
+				session.update(discussionFaviourRecord);
+			}
+			
+			
+			session.save(ideaDiscussion);
+			
+			returnMap.put("message","success");
+			returnMap.put("code","1");
+			returnMap.put("content", "");
+			
+				   
+		}finally{
+				
+				session.getTransaction().commit();
+		}
+			
+		
+		JSONObject jsonObject = new JSONObject();
+		jsonObject= JSONObject.fromObject(returnMap);
+
+	    return  jsonObject.toString();  
+	}
+	
 }

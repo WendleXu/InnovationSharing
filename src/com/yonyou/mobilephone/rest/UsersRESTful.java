@@ -53,8 +53,8 @@ public class UsersRESTful {
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
 		
-		 Map<String, Object> return_map = new LinkedHashMap<String, Object>();
-		 Map<String, Object> content_map = new LinkedHashMap<String, Object>();
+		 Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+		 Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
 		try{
 			
 			
@@ -70,33 +70,33 @@ public class UsersRESTful {
 			  
 			   if(list.size()==1){
 				   
-				   return_map.put("message","success");
-				   return_map.put("code","1");
+				   returnMap.put("message","success");
+				   returnMap.put("code","1");
 				   User user = list.get(0);
-				   content_map.put("userID",user.getUserId());
-				   content_map.put("userName", user.getUserName());
-				   content_map.put("country", user.getCountry());
-				   content_map.put("portraitUrl", user.getPortraitUrl());
+				   contentMap.put("userID",user.getUserId());
+				   contentMap.put("userName", user.getUserName());
+				   contentMap.put("country", user.getCountry());
+				   contentMap.put("portraitUrl", user.getPortraitUrl());
 				   
-				   content_map.put("reviewedFavorNumIdea", 0);
-				   content_map.put("reviewedFavorNumProject", 0);
-				   content_map.put("reviewedCommentNumIdea", 0);
-				   content_map.put("reviewedCommentNumProject", 0);
+				   contentMap.put("reviewedFavorNumIdea", 0);
+				   contentMap.put("reviewedFavorNumProject", 0);
+				   contentMap.put("reviewedCommentNumIdea", 0);
+				   contentMap.put("reviewedCommentNumProject", 0);
 				   
-				   content_map.put("sentFavorNumIdea", 0);
-				   content_map.put("sentFavorNumProject", 0);
-				   content_map.put("sentCommentNumIdea", 0);
-				   content_map.put("sentCommentNumProject", 0);
+				   contentMap.put("sentFavorNumIdea", 0);
+				   contentMap.put("sentFavorNumProject", 0);
+				   contentMap.put("sentCommentNumIdea", 0);
+				   contentMap.put("sentCommentNumProject", 0);
 				   
-				   content_map.put("myPublishIdeaNum", 0);
-				   content_map.put("myPublishProjectNum", 0);
+				   contentMap.put("myPublishIdeaNum", 0);
+				   contentMap.put("myPublishProjectNum", 0);
 				   
-				   return_map.put("content", content_map);
+				   returnMap.put("content", contentMap);
 			   }
 			   else{
-				   return_map.put("message","fail");
-				   return_map.put("code","0");
-				   return_map.put("content", "");
+				   returnMap.put("message","fail");
+				   returnMap.put("code","0");
+				   returnMap.put("content", "");
 			   }
 			   
 		}finally{
@@ -105,7 +105,7 @@ public class UsersRESTful {
 		}
 		
 		
-		JSONObject jsonObject = JSONObject.fromObject(return_map);
+		JSONObject jsonObject = JSONObject.fromObject(returnMap);
 		
 	    return  jsonObject.toString();  
 	}  
@@ -119,8 +119,8 @@ public class UsersRESTful {
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
 		
-		 Map<String, Object> return_map = new LinkedHashMap<String, Object>();
-		 Map<String, Object> content_map = new LinkedHashMap<String, Object>();
+		 Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+		 Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
 		try{
 			
 				User user = (User) session.get(User.class, userID);
@@ -141,20 +141,35 @@ public class UsersRESTful {
 				
 				List<User> userList = c.list();
 				
-				Map<String, Object> rankingsMap = new LinkedHashMap<String, Object>();
-				rankingsMap.put("top1", userList.get(0));
-				rankingsMap.put("top2", userList.get(1));
-				rankingsMap.put("top3", userList.get(2));
-				rankingsMap.put("myRrankings", userList.indexOf(user)+1);
+				Map<String, Object> rankingsMap01 = new LinkedHashMap<String, Object>();
+				Map<String, Object> rankingsMap02 = new LinkedHashMap<String, Object>();
+				Map<String, Object> rankingsMap03 = new LinkedHashMap<String, Object>();
+				Map<String, Object> rankingsMapMy = new LinkedHashMap<String, Object>();
+				List<Map<String, Object>> rankingsList = new ArrayList<Map<String,Object>>();
 				
-				content_map.put("integral",user.getIntegral());
-				content_map.put("integralLevel",integrallevel.getLevel());
-				content_map.put("integralPercent",integralPercentStr);
-				content_map.put("rankings", rankingsMap);
 				
-				return_map.put("integralInfo", content_map);
-				return_map.put("message","sucess");
-				return_map.put("code","1");
+				rankingsMap01.put("userInfo", userList.get(0));
+				rankingsMap01.put("ranking", 1);
+				rankingsMap02.put("userInfo", userList.get(1));
+				rankingsMap02.put("ranking", 2);
+				rankingsMap03.put("userInfo", userList.get(2));
+				rankingsMap03.put("ranking", 3);
+				rankingsMapMy.put("myRrankings", userList.indexOf(user)+1);
+				
+				rankingsList.add(rankingsMap01);
+				rankingsList.add(rankingsMap02);
+				rankingsList.add(rankingsMap03);
+				
+				
+				contentMap.put("integral",user.getIntegral());
+				contentMap.put("integralLevel",integrallevel.getLevel());
+				contentMap.put("integralPercent",integralPercentStr);
+				contentMap.put("rankings", rankingsList);
+				contentMap.put("myRranking",rankingsMapMy);
+				
+				returnMap.put("integralInfo", contentMap);
+				returnMap.put("message","sucess");
+				returnMap.put("code","1");
 
 				
 				
@@ -165,7 +180,7 @@ public class UsersRESTful {
 		}
 		
 		
-		//JSONObject jsonObject = JSONObject.fromObject(return_map);
+		//JSONObject jsonObject = JSONObject.fromObject(returnMap);
 		
 		
 		JSONObject jsonObject = new JSONObject();
@@ -173,7 +188,7 @@ public class UsersRESTful {
 		   JsonConfig jsonConfig = new JsonConfig(); 
 		   jsonConfig.setExcludes(new String[]{"ideas"});
 		   jsonConfig.registerJsonValueProcessor(Date.class, new JsonDateValueProcessor());  
-		   jsonObject = JSONObject.fromObject(return_map,jsonConfig);
+		   jsonObject = JSONObject.fromObject(returnMap,jsonConfig);
 
 		  } catch (Exception e) {
 		  
