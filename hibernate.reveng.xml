@@ -6,4 +6,8 @@
 		<column name="userID" property="userID"></column>
 		<column name="discussionID" property="discussionID"></column>
 	</table>
+	<table name="softVersion" catalog="innoShare">
+		<column name="creatorID" property="creatorID"></column>
+		<column name="updatorID" property="updatorID"></column>
+	</table>
 </hibernate-reverse-engineering>

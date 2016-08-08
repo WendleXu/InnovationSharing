@@ -21,7 +21,7 @@ import com.yonyou.user.form.User;
  * Ideaupdaterecord entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "ideaupdaterecord", catalog = "innoshare")
+@Table(name = "ideaUpdateRecord", catalog = "innoShare")
 public class IdeaUpdateRecord implements java.io.Serializable {
 
 	// Fields
@@ -70,7 +70,7 @@ public class IdeaUpdateRecord implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ideaID")
+	@JoinColumn(name = "ideaId")
 	public Idea getIdea() {
 		return this.idea;
 	}
@@ -80,7 +80,7 @@ public class IdeaUpdateRecord implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "creatorID")
+	@JoinColumn(name = "creatorId")
 	public User getUser() {
 		return this.user;
 	}

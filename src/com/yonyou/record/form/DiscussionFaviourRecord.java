@@ -1,10 +1,14 @@
 package com.yonyou.record.form;
 
+import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+
 import static javax.persistence.GenerationType.IDENTITY;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -12,14 +16,14 @@ import javax.persistence.Table;
  * Discussionfaviourrecord entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "discussionfaviourrecord", catalog = "innoshare")
-public class DiscussionFaviourRecord implements java.io.Serializable {
+@Table(name = "discussionFaviourRecord", catalog = "innoShare")
+public class DiscussionFaviourRecord implements Serializable {
 
 	// Fields
 
 	private Integer id;
-	private Integer userID;
-	private Integer discussionID;
+	private Integer userId;
+	private Integer discussionId;
 	private Date createTime;
 	private Date lastUpdateTime;
 	private Integer deleteFlag;
@@ -33,11 +37,11 @@ public class DiscussionFaviourRecord implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public DiscussionFaviourRecord(Integer userID, Integer discussionID,
+	public DiscussionFaviourRecord(Integer userId, Integer discussionId,
 			Date createTime, Date lastUpdateTime, Integer deleteFlag,
 			Integer isFavour, String discussionType) {
-		this.userID = userID;
-		this.discussionID = discussionID;
+		this.userId = userId;
+		this.discussionId = discussionId;
 		this.createTime = createTime;
 		this.lastUpdateTime = lastUpdateTime;
 		this.deleteFlag = deleteFlag;
@@ -57,22 +61,22 @@ public class DiscussionFaviourRecord implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@Column(name = "userID")
-	public Integer getUserID() {
-		return this.userID;
+	@Column(name = "userId")
+	public Integer getUserId() {
+		return this.userId;
 	}
 
-	public void setUserID(Integer userID) {
-		this.userID = userID;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
-	@Column(name = "discussionID")
-	public Integer getDiscussionID() {
-		return this.discussionID;
+	@Column(name = "discussionId")
+	public Integer getDiscussionId() {
+		return this.discussionId;
 	}
 
-	public void setDiscussionID(Integer discussionID) {
-		this.discussionID = discussionID;
+	public void setDiscussionId(Integer discussionId) {
+		this.discussionId = discussionId;
 	}
 
 	@Column(name = "createTime", length = 19)

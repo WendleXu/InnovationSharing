@@ -33,42 +33,6 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import com.mchange.v2.codegen.bean.BeangenUtils;
 import com.yonyou.discussion.form.IdeaDiscussion;
 import com.yonyou.discussion.form.IdeaDiscussionCopy;
@@ -77,7 +41,6 @@ import com.yonyou.idea.form.IdeaTagMap;
 import com.yonyou.image.form.IdeaImage;
 import com.yonyou.record.form.DiscussionFaviourRecord;
 import com.yonyou.record.form.IdeaFaviourRecord;
-import com.yonyou.tag.form.Person;
 import com.yonyou.tag.form.Tag;
 import com.yonyou.user.form.User;
 import com.yonyou.util.HibernateSessionFactoryUtil;
@@ -94,6 +57,8 @@ public class DiscussionsRESTful {
 		session.beginTransaction();
 
 		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> tooltipMap = new LinkedHashMap<String, Object>();
 
 		try{
 				
@@ -101,22 +66,29 @@ public class DiscussionsRESTful {
 				ideaDiscussion.setDiscussionContent(m.get("discussionContent").toString());
 				ideaDiscussion.setCreateTime(new Date());
 				
-				User user = (User) session.get(User.class, Integer.parseInt(m.get("creatorID").toString()));
+				User user = (User) session.get(User.class, Integer.parseInt(m.get("creatorId").toString()));
 				
 				ideaDiscussion.setCreator(user);
 				ideaDiscussion.setDeleteFag(0);
-				ideaDiscussion.setFatherID(Integer.parseInt(m.get("fatherID").toString()));
-				ideaDiscussion.setFaviourCount(0);
-				
-				Idea idea = (Idea) session.get(Idea.class, Integer.parseInt(m.get("ideaID").toString()));
-				ideaDiscussion.setIdea(idea);
-			
+				ideaDiscussion.setFatherId(Integer.parseInt(m.get("fatherId").toString()));
+				ideaDiscussion.setFaviourCount(0);				
+				Idea idea = (Idea) session.get(Idea.class, Integer.parseInt(m.get("ideaId").toString()));				
+				ideaDiscussion.setIdea(idea);			
 				session.save(ideaDiscussion);
+								
+				//更新idea的评论数
+				idea.setCommentCount(idea.getCommentCount()+1);
+				session.update(idea);
 				
-		        
+				//添加评论，用户积分+1
+				user.setIntegral(user.getIntegral()+1);
+				session.update(user);
+				//新增评论提示积分增加
+				tooltipMap.put("tooltip","+1");
 		        
 		        returnMap.put("message","success");
 				returnMap.put("code","1");
+				returnMap.put("content", tooltipMap);
 				   
 		}finally{
 				
@@ -129,8 +101,8 @@ public class DiscussionsRESTful {
 	}
 	
 	@GET  
-	@Path("/idea/{ideaID}")  
-	public String getDiscussionBy_ideaID(@PathParam ("ideaID") int ideaID,@Context HttpServletRequest request) throws IllegalAccessException, InvocationTargetException {  
+	@Path("/idea/{ideaId}")  
+	public String get_Discussion_By_ideaId(@PathParam ("ideaId") int ideaId,@Context HttpServletRequest request) throws IllegalAccessException, InvocationTargetException {  
   
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
@@ -142,37 +114,32 @@ public class DiscussionsRESTful {
 				Criteria c=session.createCriteria(IdeaDiscussion.class);				
 				IdeaDiscussion ideaDiscussion = new IdeaDiscussion();
 				
-				Idea idea = (Idea)session.get(Idea.class, ideaID);
+				Idea idea = (Idea)session.get(Idea.class, ideaId);
 				
 				c.add(Restrictions.eq("idea",idea));
-				c.add(Restrictions.eq("fatherID",0));
+				c.add(Restrictions.eq("fatherId",0));
 				c.addOrder(Order.desc("createTime"));
 				
 				List<Map<String,Object>> ideaAllDiscussionList = new ArrayList<Map<String,Object>>();
 				List<IdeaDiscussion> ideaTopDiscussionList= new ArrayList<IdeaDiscussion>();
 				ideaTopDiscussionList=c.list();
-							
-				System.out.println(ideaTopDiscussionList.size());
-				
-				
+								
 				
 				for(int i=0;i<ideaTopDiscussionList.size();i++)
 				{
 					Map<String,Object> ideaDiscussionMap = new LinkedHashMap<String,Object>();
 					Map<String,Object> ideaFatherDiscussionMap = new LinkedHashMap<String,Object>();
-					System.out.println(ideaTopDiscussionList.get(i).getDiscussionId()+"@@@@@@@@@@@@@@@");
-					IdeaDiscussionCopy ideaDiscussionCopyFather = new IdeaDiscussionCopy();
-					
+					IdeaDiscussionCopy ideaDiscussionCopyFather = new IdeaDiscussionCopy();					
 					
 					BeanUtils.copyProperties(ideaDiscussionCopyFather, ideaTopDiscussionList.get(i));					
 					ideaDiscussionCopyFather.setCreatorPortraitUrl(ideaTopDiscussionList.get(i).getCreator().getPortraitUrl());
 					ideaDiscussionCopyFather.setCreatorName(ideaTopDiscussionList.get(i).getCreator().getUserName());
-					ideaDiscussionCopyFather.setCreatorID(ideaTopDiscussionList.get(i).getCreator().getUserId());
-					ideaDiscussionCopyFather.setIdeaID(ideaTopDiscussionList.get(i).getIdea().getIdeaID());
+					ideaDiscussionCopyFather.setCreatorId(ideaTopDiscussionList.get(i).getCreator().getUserId());
+					ideaDiscussionCopyFather.setIdeaId(ideaTopDiscussionList.get(i).getIdea().getIdeaId());
 					
 					c=session.createCriteria(DiscussionFaviourRecord.class);
-					c.add(Restrictions.eq("discussionID",ideaDiscussionCopyFather.getDiscussionId()));
-					c.add(Restrictions.eq("userID",Integer.parseInt(request.getParameter("userID"))));
+					c.add(Restrictions.eq("discussionId",ideaDiscussionCopyFather.getDiscussionId()));
+					c.add(Restrictions.eq("userId",Integer.parseInt(request.getParameter("userId"))));
 					c.add(Restrictions.eq("deleteFlag",0));
 					c.add(Restrictions.eq("isFavour",1));
 					
@@ -181,12 +148,11 @@ public class DiscussionsRESTful {
 						ideaDiscussionCopyFather.setIsFavour(1);
 					}
 					
-					
 					ideaFatherDiscussionMap.put("father", ideaDiscussionCopyFather);
 					
 					c=session.createCriteria(IdeaDiscussion.class);
 					c.add(Restrictions.eq("idea",idea));
-					c.add(Restrictions.eq("fatherID",ideaTopDiscussionList.get(i).getDiscussionId()));
+					c.add(Restrictions.eq("fatherId",ideaTopDiscussionList.get(i).getDiscussionId()));
 					c.addOrder(Order.desc("createTime"));
 					
 					List<IdeaDiscussion> ideaSonDiscussionList = new ArrayList<IdeaDiscussion>();
@@ -198,8 +164,8 @@ public class DiscussionsRESTful {
 						BeanUtils.copyProperties(ideaDiscussionCopySon, ideaSonDiscussionList.get(j));					
 						ideaDiscussionCopySon.setCreatorPortraitUrl(ideaSonDiscussionList.get(j).getCreator().getPortraitUrl());
 						ideaDiscussionCopySon.setCreatorName(ideaSonDiscussionList.get(j).getCreator().getUserName());
-						ideaDiscussionCopySon.setCreatorID(ideaSonDiscussionList.get(j).getCreator().getUserId());
-						ideaDiscussionCopySon.setIdeaID(ideaSonDiscussionList.get(j).getIdea().getIdeaID());
+						ideaDiscussionCopySon.setCreatorId(ideaSonDiscussionList.get(j).getCreator().getUserId());
+						ideaDiscussionCopySon.setIdeaId(ideaSonDiscussionList.get(j).getIdea().getIdeaId());
 						ideaSonDiscussionListCopy.add(ideaDiscussionCopySon);
 					}
 					
@@ -242,8 +208,8 @@ public class DiscussionsRESTful {
 	}
 	
 	@PUT  
-	@Path("/{discussionID}")  
-	public String update_Discussion_By_discussionsID(@PathParam ("discussionID") int discussionID,@RequestBody Map<String,Object> m) {  
+	@Path("/{discussionId}")  
+	public String update_Discussion_By_discussionsId(@PathParam ("discussionId") int discussionId,@RequestBody Map<String,Object> m) {  
   
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
@@ -253,8 +219,8 @@ public class DiscussionsRESTful {
 
 		try{
 				
-		        IdeaDiscussion ideaDiscussion = (IdeaDiscussion) session.get(IdeaDiscussion.class, discussionID);
-		        User updator = (User) session.get(User.class, (Integer)m.get("updatorID"));
+		        IdeaDiscussion ideaDiscussion = (IdeaDiscussion) session.get(IdeaDiscussion.class, discussionId);
+		        User updator = (User) session.get(User.class, Integer.parseInt(m.get("updatorId").toString()));
 		        
 		   
 		        ideaDiscussion.setUpdator(updator);
@@ -279,8 +245,8 @@ public class DiscussionsRESTful {
 	}
 	
 	@DELETE  
-	@Path("/{discussionID}")  
-	public String delete_Discussion_By_discussionsID(@PathParam ("discussionID") int discussionID,@RequestBody Map<String,Object> m) {  
+	@Path("/{discussionId}")  
+	public String delete_Discussion_By_discussionsId(@PathParam ("discussionId") int discussionId,@RequestBody Map<String,Object> m) {  
   
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
@@ -290,8 +256,8 @@ public class DiscussionsRESTful {
 
 		try{
 				
-		        IdeaDiscussion ideaDiscussion = (IdeaDiscussion) session.get(IdeaDiscussion.class, discussionID);
-		        User updator = (User) session.get(User.class, (Integer)m.get("updatorID"));
+		        IdeaDiscussion ideaDiscussion = (IdeaDiscussion) session.get(IdeaDiscussion.class, discussionId);
+		        User updator = (User) session.get(User.class, (Integer)m.get("updatorId"));
 		        
 		   
 		        ideaDiscussion.setUpdator(updator);
@@ -300,7 +266,11 @@ public class DiscussionsRESTful {
 		        
 		        session.save(ideaDiscussion);
 		        
-		       
+		        Idea idea = (Idea) session.get(Idea.class, Integer.parseInt(m.get("ideaId").toString()));
+		      //减少idea的评论数
+				idea.setCommentCount(idea.getCommentCount()+1);
+				session.save(idea);
+		        
 				   
 		}finally{
 				
@@ -316,26 +286,25 @@ public class DiscussionsRESTful {
 	}
 	
 	@PUT
-	@Path("/{discussionID}/faviour")
-	public String update_idea_faviour(@RequestBody Map<String,Object> m) {  
+	@Path("/{discussionId}/faviour")
+	public String update_discussion_faviour(@RequestBody Map<String,Object> m) {  
 		
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
-
 		
 		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
 		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> tooltipMap = new LinkedHashMap<String, Object>();
 		try{
 			
-			IdeaDiscussion ideaDiscussion = (IdeaDiscussion) session.get(IdeaDiscussion.class,  (Integer)m.get("discussionID"));
+			IdeaDiscussion ideaDiscussion = (IdeaDiscussion) session.get(IdeaDiscussion.class,  Integer.parseInt(m.get("discussionId").toString()));
 			
 			if(m.get("updateWay").equals("add"))
 			{
-				ideaDiscussion.setFaviourCount(ideaDiscussion.getFaviourCount()+1);
 				
 				Criteria c=session.createCriteria(DiscussionFaviourRecord.class);
-				c.add(Restrictions.eq("discussionID", Integer.parseInt(m.get("discussionID").toString())));
-				c.add(Restrictions.eq("userID", Integer.parseInt(m.get("userID").toString())));
+				c.add(Restrictions.eq("discussionId", Integer.parseInt(m.get("discussionId").toString())));
+				c.add(Restrictions.eq("userId", Integer.parseInt(m.get("userId").toString())));
 				c.add(Restrictions.eq("discussionType", m.get("discussionType").toString()));
 				List <DiscussionFaviourRecord> discussionFaviourRecords = c.list();
 				if(discussionFaviourRecords.size()>0)
@@ -353,36 +322,45 @@ public class DiscussionsRESTful {
 					discussionFaviourRecord.setDeleteFlag(0);
 					discussionFaviourRecord.setCreateTime(new Date());
 					discussionFaviourRecord.setIsFavour(1);
-					discussionFaviourRecord.setDiscussionID(Integer.parseInt(m.get("discussionID").toString()));
-					discussionFaviourRecord.setUserID(Integer.parseInt(m.get("userID").toString()));
+					discussionFaviourRecord.setDiscussionId(Integer.parseInt(m.get("discussionId").toString()));
+					discussionFaviourRecord.setUserId(Integer.parseInt(m.get("userId").toString()));
 					discussionFaviourRecord.setDiscussionType(m.get("discussionType").toString());
 					session.save(discussionFaviourRecord);
 					
+					User user = (User) session.get(User.class, Integer.parseInt(m.get("userId").toString()));
+					//评论点赞，用户积分+1
+					user.setIntegral(user.getIntegral()+1);
+					//评论点赞，提示积分增加
+					tooltipMap.put("tooltip","+1");		
+					session.update(user);
+					
 				}
-				
-				
+				//评论的点赞数+1
+				ideaDiscussion.setFaviourCount(ideaDiscussion.getFaviourCount()+1);
 				
 			}else{
+				
+				//评论的点赞数-1
 				if(ideaDiscussion.getFaviourCount()>0){
 					ideaDiscussion.setFaviourCount(ideaDiscussion.getFaviourCount()-1);
 				}				
-				Criteria c=session.createCriteria(Idea.class);
-				c.add(Restrictions.eq("ideaID", m.get("ideaID").toString()));
-				c.add(Restrictions.eq("discussionID", m.get("discussionID").toString()));
-				c.add(Restrictions.eq("discussionType", Integer.parseInt(m.get("discussionType").toString())));
+				Criteria c=session.createCriteria(DiscussionFaviourRecord.class);
+				c.add(Restrictions.eq("userId", Integer.parseInt(m.get("userId").toString())));
+				c.add(Restrictions.eq("discussionId",  Integer.parseInt(m.get("discussionId").toString())));
+				c.add(Restrictions.eq("discussionType", m.get("discussionType").toString()));
 				DiscussionFaviourRecord discussionFaviourRecord = (DiscussionFaviourRecord) c.list().get(0);
 				discussionFaviourRecord.setDeleteFlag(1);
 				discussionFaviourRecord.setLastUpdateTime(new Date());
 				discussionFaviourRecord.setIsFavour(0);
 				session.update(discussionFaviourRecord);
+
 			}
 			
-			
-			session.save(ideaDiscussion);
+			session.merge(ideaDiscussion);
 			
 			returnMap.put("message","success");
 			returnMap.put("code","1");
-			returnMap.put("content", "");
+			returnMap.put("content", tooltipMap);
 			
 				   
 		}finally{

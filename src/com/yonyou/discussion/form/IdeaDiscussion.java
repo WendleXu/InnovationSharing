@@ -21,7 +21,7 @@ import com.yonyou.user.form.User;
  * Ideadiscussion entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "ideadiscussion", catalog = "innoshare")
+@Table(name = "ideaDiscussion", catalog = "innoShare")
 public class IdeaDiscussion implements java.io.Serializable {
 
 	// Fields
@@ -30,7 +30,7 @@ public class IdeaDiscussion implements java.io.Serializable {
 	private Idea idea;
 	private User updator;
 	private User creator;
-	private Integer fatherID;
+	private Integer fatherId;
 	private Integer faviourCount;
 	private String discussionContent;
 	private Integer deleteFag;
@@ -45,13 +45,13 @@ public class IdeaDiscussion implements java.io.Serializable {
 
 	/** full constructor */
 	public IdeaDiscussion(Idea idea, User updator,
-			User creator, Integer fatherID, Integer faviourCount,
+			User creator, Integer fatherId, Integer faviourCount,
 			String discussionContent, Integer deleteFag, Date createTime,
 			Date lastUpdateTime) {
 		this.idea = idea;
 		this.updator = updator;
 		this.creator = creator;
-		this.fatherID = fatherID;
+		this.fatherId = fatherId;
 		this.faviourCount = faviourCount;
 		this.discussionContent = discussionContent;
 		this.deleteFag = deleteFag;
@@ -62,7 +62,7 @@ public class IdeaDiscussion implements java.io.Serializable {
 	// Property accessors
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "discussionID", unique = true, nullable = false)
+	@Column(name = "discussionId", unique = true, nullable = false)
 	public Integer getDiscussionId() {
 		return this.discussionId;
 	}
@@ -72,7 +72,7 @@ public class IdeaDiscussion implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ideaID")
+	@JoinColumn(name = "ideaId")
 	public Idea getIdea() {
 		return this.idea;
 	}
@@ -82,7 +82,7 @@ public class IdeaDiscussion implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "updatorID")
+	@JoinColumn(name = "updatorId")
 	public User getUpdator() {
 		return this.updator;
 	}
@@ -92,7 +92,7 @@ public class IdeaDiscussion implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "creatorID")
+	@JoinColumn(name = "creatorId")
 	public User getCreator() {
 		return this.creator;
 	}
@@ -101,13 +101,13 @@ public class IdeaDiscussion implements java.io.Serializable {
 		this.creator = creator;
 	}
 
-	@Column(name = "fatherID")
-	public Integer getFatherID() {
-		return this.fatherID;
+	@Column(name = "fatherId")
+	public Integer getFatherId() {
+		return this.fatherId;
 	}
 
-	public void setFatherID(Integer fatherID) {
-		this.fatherID = fatherID;
+	public void setFatherId(Integer fatherId) {
+		this.fatherId = fatherId;
 	}
 
 	@Column(name = "faviourCount")

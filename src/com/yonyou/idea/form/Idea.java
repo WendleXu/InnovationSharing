@@ -26,17 +26,17 @@ import com.yonyou.user.form.User;
  * Idea entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "idea", catalog = "innoshare")
+@Table(name = "idea", catalog = "innoShare")
 public class Idea implements java.io.Serializable {
 
 	// Fields
 
-	private Integer ideaID;
+	private Integer ideaId;
 	private User user;
 	private String ideaTitle;
 	private Integer faviourCount;
 	private Integer commentCount;
-	private Integer titleImgID;
+	private Integer titleImgId;
 	private String description;
 	private Integer readCount;
 	private Integer deleteFlag;
@@ -44,6 +44,11 @@ public class Idea implements java.io.Serializable {
 	private Date createTime;
 	private Date lastUpdateTime;
 	private String country;
+	private Integer theYear;
+	private Integer theMonth;
+	private Integer theWeek;
+	private Integer theDay;
+	
 	private Set<IdeaTagMap> ideaTagMaps = new HashSet<IdeaTagMap>(0);
 	private Set<IdeaImage> ideaImages = new HashSet<IdeaImage>(0);
 	private Set<IdeaDiscussion> ideaDiscussions = new HashSet<IdeaDiscussion>(0);
@@ -61,7 +66,7 @@ public class Idea implements java.io.Serializable {
 			Integer commentCount, Integer backgroundPictureId,
 			String description, Integer tagsId, Integer readCount,
 			Integer deleteFlag, String detail, Date createTime,
-			Date lastUpdateTime, String country, Set<IdeaTagMap> ideatagmaps,
+			Date lastUpdateTime, String country, Integer theYear, Integer theMonth, Integer theWeek, Integer theDay, Set<IdeaTagMap> ideatagmaps,
 			Set<Ideaimagemap> ideaimagemaps,
 			Set<Ideadiscussion> ideadiscussions,
 			Set<Ideaupdaterecord> ideaupdaterecords) {
@@ -87,17 +92,17 @@ public class Idea implements java.io.Serializable {
 	// Property accessors
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "ideaID", unique = true, nullable = false)
-	public Integer getIdeaID() {
-		return this.ideaID;
+	@Column(name = "ideaId", unique = true, nullable = false)
+	public Integer getIdeaId() {
+		return this.ideaId;
 	}
 
-	public void setIdeaID(Integer ideaID) {
-		this.ideaID = ideaID;
+	public void setIdeaId(Integer ideaId) {
+		this.ideaId = ideaId;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "userID")
+	@JoinColumn(name = "userId")
 	public User getUser() {
 		return this.user;
 	}
@@ -133,13 +138,13 @@ public class Idea implements java.io.Serializable {
 		this.commentCount = commentCount;
 	}
 
-	@Column(name = "titleImgID")
-	public Integer getTitleImgID() {
-		return titleImgID;
+	@Column(name = "titleImgId")
+	public Integer getTitleImgId() {
+		return titleImgId;
 	}
 
-	public void setTitleImgID(Integer titleImgID) {
-		this.titleImgID = titleImgID;
+	public void setTitleImgId(Integer titleImgId) {
+		this.titleImgId = titleImgId;
 	}
 
 	@Column(name = "description", length = 65535)
@@ -232,6 +237,42 @@ public class Idea implements java.io.Serializable {
 		this.ideaDiscussions = ideaDiscussions;
 	}
 
+	@Column(name = "theYear")
+	public Integer getTheYear() {
+		return theYear;
+	}
+
+	public void setTheYear(Integer theYear) {
+		this.theYear = theYear;
+	}
+
+	@Column(name = "theMonth")
+	public Integer getTheMonth() {
+		return theMonth;
+	}
+
+	public void setTheMonth(Integer theMonth) {
+		this.theMonth = theMonth;
+	}
+
+	@Column(name = "theWeek")
+	public Integer getTheWeek() {
+		return theWeek;
+	}
+
+	public void setTheWeek(Integer theWeek) {
+		this.theWeek = theWeek;
+	}
+
+	@Column(name = "theDay")
+	public Integer getTheDay() {
+		return theDay;
+	}
+
+	public void setTheDay(Integer theDay) {
+		this.theDay = theDay;
+	}
+	
 	/*@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "idea")
 	public Set<Ideaupdaterecord> getIdeaupdaterecords() {
 		return this.ideaupdaterecords;

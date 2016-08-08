@@ -1,7 +1,8 @@
 ﻿<%@page pageEncoding="UTF-8" language="java"%>
 <!DOCTYPE html>
 <html>
-	<head>
+<head>
+<head>
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<meta charset="utf-8">
 		<meta
@@ -13,7 +14,7 @@
 		<link rel="stylesheet" href="css/html5reset.css" />
 		<link rel="stylesheet" href="css/index.css" />
 		<link rel="stylesheet" href="css/keyframes.css" />
-		<script src="js/jquery-2.0.2.min.js"></script>
+		<script src="js/jquery-3.1.0.min.js"></script>
 		<script src="js/index.js"></script>
 		<style>
 
@@ -47,37 +48,25 @@
 		
 	</head>
 	
-	<body>
-		<div class="weixin-tip">
-			<p>
-				<img src="img/live_weixin.png" alt="微信打开"/>
-			</p>
-		</div>
-		<header>
-			沃尔沃汽车（中国）SMM平台
-		</header>
-		
-		<div class="bd">
-			<img src="img/bg.png" style="width: 100%;margin-top: 50px;">
-			<p style="width:50%;float:left;"> 
-				<a name="androidapk_tongyong" class="btn androidversion"
-					href="http://smm.volvocars.com.cn/smm_android.apk">
-					Android安装
-				</a>
-			</p>
+<body>
+<div class="weixin-tip">
+	<p>
+		<img src="img/live_weixin.png" alt="微信打开"/>
+	</p>
+</div>
+
+<div class="bd">
 			<p style="width:50%;float:left;">
 				<a id="iosapp_tongyong" name="iosapp_tongyong" class="btn iosversion"
-					href="itms-services:///?action=download-manifest&url=https://smm.volvocars.com.cn/innoShare_test.plist">
+					href="itms-services://?action=download-manifest&url=https://git.oschina.net/WendleXu/innoShare/raw/master/innoShare_test.plist">
 					iPhone安装
 				</a>
 			</p>
 		</div>
-		<footer class="footer_1">
-			Copyright©2005-2015 www.volvocars.com.cn
 
-		</footer>
-	</body>
+</body>
 </html>
+
 <script type="text/javascript">
 function oncheck(){
 	var ua = window.navigator.userAgent.toLowerCase();

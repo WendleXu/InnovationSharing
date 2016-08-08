@@ -11,7 +11,7 @@ import javax.persistence.Table;
  * Integrallevel entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "integrallevel", catalog = "innoshare")
+@Table(name = "integralLevel", catalog = "innoShare")
 public class Integrallevel implements java.io.Serializable {
 
 	// Fields
@@ -20,6 +20,7 @@ public class Integrallevel implements java.io.Serializable {
 	private Integer integralDown;
 	private Integer integralUp;
 	private String level;
+	private String nextLevel;
 
 	// Constructors
 
@@ -28,10 +29,11 @@ public class Integrallevel implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public Integrallevel(Integer integralDown, Integer integralUp, String level) {
+	public Integrallevel(Integer integralDown, Integer integralUp, String level,String nextLevel) {
 		this.integralDown = integralDown;
 		this.integralUp = integralUp;
 		this.level = level;
+		this.nextLevel = nextLevel;
 	}
 
 	// Property accessors
@@ -72,5 +74,15 @@ public class Integrallevel implements java.io.Serializable {
 	public void setLevel(String level) {
 		this.level = level;
 	}
+	
+	@Column(name = "nextLevel", length = 32)
+	public String getNextLevel() {
+		return nextLevel;
+	}
+
+	public void setNextLevel(String nextLevel) {
+		this.nextLevel = nextLevel;
+	}
+
 
 }

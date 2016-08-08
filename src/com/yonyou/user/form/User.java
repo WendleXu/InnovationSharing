@@ -22,7 +22,7 @@ import com.yonyou.idea.form.Idea;
  * User entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "user", catalog = "innoshare")
+@Table(name = "user", catalog = "innoShare")
 public class User implements java.io.Serializable {
 
 	// Fields
@@ -85,7 +85,7 @@ public class User implements java.io.Serializable {
 	// Property accessors
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "userID", unique = true, nullable = false)
+	@Column(name = "userId", unique = true, nullable = false)
 	public Integer getUserId() {
 		return this.userId;
 	}
@@ -157,7 +157,7 @@ public class User implements java.io.Serializable {
 		this.lastLoginType = lastLoginType;
 	}
 
-	@Column(name = "chanelID", length = 32)
+	@Column(name = "chanelId", length = 32)
 	public String getChanelId() {
 		return this.chanelId;
 	}
@@ -166,7 +166,7 @@ public class User implements java.io.Serializable {
 		this.chanelId = chanelId;
 	}
 
-	@Column(name = "pushID", length = 32)
+	@Column(name = "pushId", length = 32)
 	public String getPushId() {
 		return this.pushId;
 	}
@@ -202,7 +202,7 @@ public class User implements java.io.Serializable {
 		this.lastUpdateTime = lastUpdateTime;
 	}
 
-	@Column(name = "portraitURL")
+	@Column(name = "portraitUrl")
 	public String getPortraitUrl() {
 		return this.portraitUrl;
 	}

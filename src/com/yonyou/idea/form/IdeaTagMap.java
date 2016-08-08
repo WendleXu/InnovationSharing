@@ -1,6 +1,7 @@
 package com.yonyou.idea.form;
 // default package
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -21,8 +22,8 @@ import com.yonyou.tag.form.Tag;
  * IdeaTagMap entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "ideatagmap", catalog = "innoshare")
-public class IdeaTagMap implements java.io.Serializable {
+@Table(name = "ideaTagMap", catalog = "innoShare")
+public class IdeaTagMap implements Serializable {
 
 	// Fields
 
@@ -32,7 +33,7 @@ public class IdeaTagMap implements java.io.Serializable {
 	private Integer deleteFlag;
 	private Date createTime;
 	private Date lastUpdateTime;
-	private Integer createrId;
+	private Integer creatorId;
 
 	// Constructors
 
@@ -42,13 +43,13 @@ public class IdeaTagMap implements java.io.Serializable {
 
 	/** full constructor */
 	public IdeaTagMap(Idea idea, Tag tag, Integer deleteFlag, Date createTime,
-			Date lastUpdateTime, Integer createrId) {
+			Date lastUpdateTime, Integer creatorId) {
 		this.idea = idea;
 		this.tag = tag;
 		this.deleteFlag = deleteFlag;
 		this.createTime = createTime;
 		this.lastUpdateTime = lastUpdateTime;
-		this.createrId = createrId;
+		this.creatorId = creatorId;
 	}
 
 	// Property accessors
@@ -64,7 +65,7 @@ public class IdeaTagMap implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ideaID")
+	@JoinColumn(name = "ideaId")
 	public Idea getIdea() {
 		return this.idea;
 	}
@@ -74,7 +75,7 @@ public class IdeaTagMap implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "tagID")
+	@JoinColumn(name = "tagId")
 	public Tag getTag() {
 		return this.tag;
 	}
@@ -110,13 +111,13 @@ public class IdeaTagMap implements java.io.Serializable {
 		this.lastUpdateTime = lastUpdateTime;
 	}
 
-	@Column(name = "createrID")
-	public Integer getCreaterId() {
-		return this.createrId;
+	@Column(name = "creatorId")
+	public Integer getCreatorId() {
+		return this.creatorId;
 	}
 
-	public void setCreaterId(Integer createrId) {
-		this.createrId = createrId;
+	public void setCreatorId(Integer creatorId) {
+		this.creatorId = creatorId;
 	}
 
 }

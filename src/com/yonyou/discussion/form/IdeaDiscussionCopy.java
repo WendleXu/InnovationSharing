@@ -30,29 +30,29 @@ public class IdeaDiscussionCopy implements java.io.Serializable {
 	public void setDiscussionId(Integer discussionId) {
 		this.discussionId = discussionId;
 	}
-	public Integer getIdeaID() {
-		return ideaID;
+	public Integer getIdeaId() {
+		return ideaId;
 	}
-	public void setIdeaID(Integer ideaID) {
-		this.ideaID = ideaID;
+	public void setIdeaId(Integer ideaId) {
+		this.ideaId = ideaId;
 	}
-	public Integer getUpdatorID() {
-		return updatorID;
+	public Integer getUpdatorId() {
+		return updatorId;
 	}
-	public void setUpdatorID(Integer updatorID) {
-		this.updatorID = updatorID;
+	public void setUpdatorId(Integer updatorId) {
+		this.updatorId = updatorId;
 	}
-	public Integer getCreatorID() {
-		return creatorID;
+	public Integer getCreatorId() {
+		return creatorId;
 	}
-	public void setCreatorID(Integer creatorID) {
-		this.creatorID = creatorID;
+	public void setCreatorId(Integer creatorId) {
+		this.creatorId = creatorId;
 	}
-	public Integer getFatherID() {
-		return fatherID;
+	public Integer getFatherId() {
+		return fatherId;
 	}
-	public void setFatherID(Integer fatherID) {
-		this.fatherID = fatherID;
+	public void setFatherId(Integer fatherId) {
+		this.fatherId = fatherId;
 	}
 	public Integer getFaviourCount() {
 		return faviourCount;
@@ -85,10 +85,10 @@ public class IdeaDiscussionCopy implements java.io.Serializable {
 		this.lastUpdateTime = lastUpdateTime;
 	}
 	private Integer discussionId;
-	private Integer ideaID;
-	private Integer updatorID;
-	private Integer creatorID;
-	private Integer fatherID;
+	private Integer ideaId;
+	private Integer updatorId;
+	private Integer creatorId;
+	private Integer fatherId;
 	private Integer faviourCount;
 	private String discussionContent;
 	private Integer deleteFag;

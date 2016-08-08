@@ -1,10 +1,14 @@
 package com.yonyou.record.form;
 
+import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+
 import static javax.persistence.GenerationType.IDENTITY;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -12,14 +16,14 @@ import javax.persistence.Table;
  * Ideafaviourrecord entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "ideafaviourrecord", catalog = "innoshare")
-public class IdeaFaviourRecord implements java.io.Serializable {
+@Table(name = "ideaFaviourRecord", catalog = "innoShare")
+public class IdeaFaviourRecord implements Serializable {
 
 	// Fields
 
 	private Integer id;
-	private Integer userID;
-	private Integer ideaID;
+	private Integer userId;
+	private Integer ideaId;
 	private Date createTime;
 	private Date lastUpdateTime;
 	private Integer deleteFlag;
@@ -34,8 +38,8 @@ public class IdeaFaviourRecord implements java.io.Serializable {
 	/** full constructor */
 	public IdeaFaviourRecord(Integer userId, Integer ideaId, Date createTime,
 			Date lastUpdateTime, Integer deleteFlag, Integer isFavour) {
-		this.userID = userID;
-		this.ideaID = ideaID;
+		this.userId = userId;
+		this.ideaId = ideaId;
 		this.createTime = createTime;
 		this.lastUpdateTime = lastUpdateTime;
 		this.deleteFlag = deleteFlag;
@@ -54,22 +58,22 @@ public class IdeaFaviourRecord implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@Column(name = "userID")
-	public Integer getUserID() {
-		return this.userID;
+	@Column(name = "userId")
+	public Integer getUserId() {
+		return this.userId;
 	}
 
-	public void setUserID(Integer userID) {
-		this.userID = userID;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
-	@Column(name = "ideaID")
-	public Integer getIdeaID() {
-		return this.ideaID;
+	@Column(name = "ideaId")
+	public Integer getIdeaId() {
+		return this.ideaId;
 	}
 
-	public void setIdeaID(Integer ideaID) {
-		this.ideaID = ideaID;
+	public void setIdeaId(Integer ideaId) {
+		this.ideaId = ideaId;
 	}
 
 	@Column(name = "createTime", length = 19)

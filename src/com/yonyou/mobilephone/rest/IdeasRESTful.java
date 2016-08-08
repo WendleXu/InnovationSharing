@@ -3,6 +3,7 @@ package com.yonyou.mobilephone.rest;
 import java.io.Serializable;
 import java.security.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -33,17 +34,11 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.ejb.criteria.expression.function.LengthFunction;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-
-
-
-
 import com.yonyou.idea.form.Idea;
 import com.yonyou.idea.form.IdeaTagMap;
 import com.yonyou.idea.form.IdeaUpdateRecord;
 import com.yonyou.image.form.IdeaImage;
 import com.yonyou.record.form.IdeaFaviourRecord;
-import com.yonyou.tag.form.Person;
 import com.yonyou.tag.form.Tag;
 import com.yonyou.user.form.User;
 import com.yonyou.util.HibernateSessionFactoryUtil;
@@ -55,8 +50,8 @@ public class IdeasRESTful {
 	
 
 	@GET   
-	@Path("/{ideaID}")  
-	public String get_idea_detail(@PathParam ("ideaID") int ideaID) {  
+	@Path("/{ideaId}")  
+	public String get_idea_detail(@PathParam ("ideaId") int ideaId) {  
   
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
@@ -68,18 +63,16 @@ public class IdeasRESTful {
 			
 			Criteria c=session.createCriteria(Idea.class);
 			
-			Idea idea = (Idea) session.get(Idea.class, ideaID);
+			Idea idea = (Idea) session.get(Idea.class, ideaId);
 			
-			userInfoMap.put("creatorID",idea.getUser().getUserId());
+			userInfoMap.put("creatorId",idea.getUser().getUserId());
 			userInfoMap.put("creatorName",idea.getUser().getUserName());
 			userInfoMap.put("creatorPortrait",idea.getUser().getPortraitUrl());
 			userInfoMap.put("country",idea.getUser().getCountry());
 			contentMap.put("userInfo", userInfoMap);
 			
 			contentMap.put("ideaDetal",idea);
-			
-			
-			
+
 			returnMap.put("message","success");
 			returnMap.put("code","1");
 			
@@ -95,7 +88,7 @@ public class IdeasRESTful {
 		JSONObject jsonObject = new JSONObject();
 		  try {
 		   JsonConfig config = new JsonConfig(); 
-		   config.setExcludes(new String[]{"user","ideaTagMaps","ideaDiscussions","ideaImages","country"}) ;
+		   config.setExcludes(new String[]{"user","ideaTagMaps","ideaDiscussions","ideaImages"}) ;
 		   config.registerJsonValueProcessor(Date.class, new JsonDateValueProcessor());  
 		   jsonObject = JSONObject.fromObject(returnMap,config);
 
@@ -118,7 +111,7 @@ public class IdeasRESTful {
 		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
 		try{
 			
-			Idea idea = (Idea) session.get(Idea.class, Integer.parseInt(request.getParameter("ideaID")) );
+			Idea idea = (Idea) session.get(Idea.class, Integer.parseInt(request.getParameter("ideaId")) );
 			
 			Criteria c=session.createCriteria(IdeaUpdateRecord.class);
 			c.add(Restrictions.eq("idea",idea));
@@ -172,12 +165,13 @@ public class IdeasRESTful {
 				c.add(Restrictions.eq("country",request.getParameter("country")));//eq是等于，gt是大于，lt是小于,or是或
 			}
 			
-			if(request.getParameter("tagID")!=null && !request.getParameter("tagID").equals(""))
+			if(request.getParameter("tagId")!=null && !request.getParameter("tagId").equals(""))
 			{
-				c.add(Restrictions.eq("tagID", request.getParameter("tagID")));
+				c.add(Restrictions.eq("tagId", request.getParameter("tagId")));
 			}
-			
+			c.add(Restrictions.eq("deleteFlag", 0));
 			c.addOrder(Order.desc("createTime"));
+			
 			
 			c.setProjection(Projections.rowCount());
 			c.setProjection(null);
@@ -238,7 +232,7 @@ public class IdeasRESTful {
 			List<UserInfo> list=query.list();*/
 
 
-			String hql="select idea.country,count(idea.ideaID) from Idea idea group by country";
+			String hql="select idea.country,count(idea.ideaId) from Idea idea group by country";
             Query query=session.createQuery(hql);
             @SuppressWarnings("unchecked")
             List<Object[]> list=query.list();
@@ -263,7 +257,7 @@ public class IdeasRESTful {
 			for(Tag tag:tags){
 				Map<String, Object> tagsMap = new LinkedHashMap<String, Object>();
 				tagsMap.put("tagName", tag.getTagName());
-				tagsMap.put("tagID", tag.getTagID());
+				tagsMap.put("tagId", tag.getTagId());
 				tagList.add(tagsMap);
 				
 			}
@@ -296,24 +290,38 @@ public class IdeasRESTful {
 		session.beginTransaction();
 
 		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> tooltipMap = new LinkedHashMap<String, Object>();
 
 		try{
 				
 				Idea idea = new Idea();
 				User user = new User();
 
-				user = (User) session.get(User.class, Integer.parseInt(m.get("userID").toString()));
+				user = (User) session.get(User.class, Integer.parseInt(m.get("userId").toString()));
 
 				idea.setUser(user);
 				idea.setIdeaTitle(m.get("title").toString());
 				idea.setCountry(m.get("country").toString());
 				idea.setDescription(m.get("description").toString());
-				idea.setTitleImgID(Integer.parseInt(m.get("titleImgID").toString()));
-				idea.setCreateTime(new Date());
+				idea.setTitleImgId(Integer.parseInt(m.get("titleImgId").toString()));
+				
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(new Date());
+			
+				idea.setCreateTime(cal.getTime());
+				idea.setTheYear(cal.get(Calendar.YEAR));
+				idea.setTheMonth(cal.get(Calendar.MONTH));
+				idea.setTheWeek(cal.get(Calendar.WEEK_OF_YEAR));
+				idea.setTheDay(cal.get(Calendar.DAY_OF_MONTH));
+				
+				
 				idea.setFaviourCount(0);
 				idea.setReadCount(0);
 				idea.setCommentCount(0);	
 				idea.setDeleteFlag(0);
+				
+				
 			
 				session.save(idea);
 				
@@ -323,17 +331,24 @@ public class IdeasRESTful {
 		        Iterator it = list.iterator();  
 		        while(it.hasNext()){  
 		            Tag tag = (Tag)it.next();   
-		            System.out.println(tag.getTagID());
+		            System.out.println(tag.getTagId());
 		            IdeaTagMap ideaTagMap = new IdeaTagMap();
 		            ideaTagMap.setIdea(idea);
 		            ideaTagMap.setDeleteFlag(0);
 		            ideaTagMap.setCreateTime(new Date());
-		            ideaTagMap.setTag((Tag) session.get(Tag.class, tag.getTagID()));
+		            ideaTagMap.setTag((Tag) session.get(Tag.class, tag.getTagId()));
 		            session.save(ideaTagMap);
 		        }  
 		        
+		        //添加idea，用户积分+10
+				user.setIntegral(user.getIntegral()+10);
+				session.update(user);
+				//添加idea，提示积分增加
+				tooltipMap.put("tooltip","+10");
+		        
 		        returnMap.put("message","success");
 				returnMap.put("code","1");
+				returnMap.put("content", tooltipMap);
 				   
 		}finally{
 				
@@ -346,7 +361,7 @@ public class IdeasRESTful {
 	}
 	
 	@PUT
-	@Path("/{ideaID}/detail")
+	@Path("/{ideaId}/detail")
 	public String update_idea_details(@RequestBody Map<String,Object> m) {  
 		
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
@@ -356,7 +371,7 @@ public class IdeasRESTful {
 		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
 		try{
 			
-			Idea idea = (Idea) session.get(Idea.class,  (Integer)m.get("ideaID"));
+			Idea idea = (Idea) session.get(Idea.class,  (Integer)m.get("ideaId"));
 			idea.setIdeaTitle(m.get("ideaTitle").toString());
 			idea.setDescription(m.get("description").toString());
 			idea.setDetail(m.get("detail").toString());
@@ -381,7 +396,7 @@ public class IdeasRESTful {
 	}
 	
 	@PUT
-	@Path("/{ideaID}/faviour")
+	@Path("/{ideaId}/faviour")
 	public String update_idea_faviour(@RequestBody Map<String,Object> m) {  
 		
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
@@ -390,33 +405,40 @@ public class IdeasRESTful {
 		
 		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
 		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> tooltipMap = new LinkedHashMap<String, Object>();
 		try{
 			
-			Idea idea = (Idea) session.get(Idea.class,Integer.parseInt(m.get("ideaID").toString()));
-			
+			Idea idea = (Idea) session.get(Idea.class,Integer.parseInt(m.get("ideaId").toString()));
+			IdeaFaviourRecord ideaFaviourRecord=null;
 			if(m.get("updateWay").equals("add")){
 				idea.setFaviourCount(idea.getFaviourCount()+1);
 				
 				Criteria c=session.createCriteria(IdeaFaviourRecord.class);
-				c.add(Restrictions.eq("ideaID", Integer.parseInt(m.get("ideaID").toString())));
-				c.add(Restrictions.eq("userID", Integer.parseInt(m.get("userID").toString())));
+				c.add(Restrictions.eq("ideaId", Integer.parseInt(m.get("ideaId").toString())));
+				c.add(Restrictions.eq("userId", Integer.parseInt(m.get("userId").toString())));
 				List <IdeaFaviourRecord> ideaFaviourRecords = c.list();
 				if(ideaFaviourRecords.size()>0){
-					IdeaFaviourRecord ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
+					ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
 					ideaFaviourRecord.setDeleteFlag(0);
 					ideaFaviourRecord.setLastUpdateTime(new Date());
 					ideaFaviourRecord.setIsFavour(1);
-					session.update(ideaFaviourRecord);
+					
 				}else{
 					
-					IdeaFaviourRecord ideaFaviourRecord = new IdeaFaviourRecord();
+					ideaFaviourRecord = new IdeaFaviourRecord();
 					
 					ideaFaviourRecord.setDeleteFlag(0);
 					ideaFaviourRecord.setCreateTime(new Date());
 					ideaFaviourRecord.setIsFavour(1);
-					ideaFaviourRecord.setIdeaID(Integer.parseInt(m.get("ideaID").toString()));
-					ideaFaviourRecord.setUserID(Integer.parseInt(m.get("userID").toString()));
-					session.save(ideaFaviourRecord);
+					ideaFaviourRecord.setIdeaId(Integer.parseInt(m.get("ideaId").toString()));
+					ideaFaviourRecord.setUserId(Integer.parseInt(m.get("userId").toString()));
+										
+					//idea点赞，提示积分+1
+					tooltipMap.put("tooltip","+1");
+					//idea点赞，用户积分+1
+					User user = (User) session.get(User.class, Integer.parseInt(m.get("userId").toString()));
+					user.setIntegral(user.getIntegral()+1);
+					session.update(user);
 					
 				}
 				
@@ -426,22 +448,22 @@ public class IdeasRESTful {
 				if(idea.getFaviourCount()>0){
 					idea.setFaviourCount(idea.getFaviourCount()-1);
 				}				
-				Criteria c=session.createCriteria(Idea.class);
-				c.add(Restrictions.eq("ideaID",Integer.parseInt(m.get("ideaID").toString())));
-				c.add(Restrictions.eq("userID",Integer.parseInt(m.get("userID").toString())));
-				IdeaFaviourRecord ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
+				Criteria c=session.createCriteria(IdeaFaviourRecord.class);
+				c.add(Restrictions.eq("ideaId",Integer.parseInt(m.get("ideaId").toString())));
+				c.add(Restrictions.eq("userId",Integer.parseInt(m.get("userId").toString())));
+				ideaFaviourRecord = (IdeaFaviourRecord) c.list().get(0);
 				ideaFaviourRecord.setDeleteFlag(1);
 				ideaFaviourRecord.setLastUpdateTime(new Date());
 				ideaFaviourRecord.setIsFavour(0);
-				session.update(ideaFaviourRecord);
 			}
 			
+			session.merge(ideaFaviourRecord);
 			
-			session.save(idea);
+			session.update(idea);
 			
 			returnMap.put("message","success");
 			returnMap.put("code","1");
-			returnMap.put("content", "");
+			returnMap.put("content", tooltipMap);
 			
 				   
 		}finally{
@@ -457,7 +479,7 @@ public class IdeasRESTful {
 	}
 	
 	@GET
-	@Path("/{ideaID}/faviour")
+	@Path("/{ideaId}/faviour")
 	public String get_isFaviour_info(@Context HttpServletRequest request) {  
 		
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
@@ -469,11 +491,11 @@ public class IdeasRESTful {
 		
 		try{
 			
-			Idea idea = (Idea) session.get(Idea.class,Integer.parseInt(request.getParameter("ideaID")));
+			Idea idea = (Idea) session.get(Idea.class,Integer.parseInt(request.getParameter("ideaId")));
 			
 			Criteria c=session.createCriteria(IdeaFaviourRecord.class);
-			c.add(Restrictions.eq("ideaID", Integer.parseInt(request.getParameter("ideaID").toString())));
-			c.add(Restrictions.eq("userID", Integer.parseInt(request.getParameter("userID").toString())));
+			c.add(Restrictions.eq("ideaId", Integer.parseInt(request.getParameter("ideaId").toString())));
+			c.add(Restrictions.eq("userId", Integer.parseInt(request.getParameter("userId").toString())));
 			List <IdeaFaviourRecord> ideaFaviourRecords = c.list();
 			if(ideaFaviourRecords.size()>0 && ideaFaviourRecords.get(0).getDeleteFlag()==0 && ideaFaviourRecords.get(0).getIsFavour()==1)
 			{
@@ -488,8 +510,6 @@ public class IdeasRESTful {
 				
 				session.getTransaction().commit();
 		}
-			
-		
 		JSONObject jsonObject = new JSONObject();
 		jsonObject= JSONObject.fromObject(returnMap);
 
@@ -497,18 +517,17 @@ public class IdeasRESTful {
 	}
 	
 	@PUT
-	@Path("/{ideaID}/readNum")
+	@Path("/{ideaId}/readNum")
 	public String update_idea_readNum(@RequestBody Map<String,Object> m) {  
 		
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
 
-		
 		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
 		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
 		try{
 			
-			Idea idea = (Idea) session.get(Idea.class,  (Integer)m.get("ideaID"));
+			Idea idea = (Idea) session.get(Idea.class,  (Integer)m.get("ideaId"));
 			
 			if(m.get("updateWay").equals("add"))
 			{
@@ -540,6 +559,7 @@ public class IdeasRESTful {
 	    return  jsonObject.toString();  
 	}
 	
+	//更新idea,添加新的内容
 	@POST   
 	@Path("/renewal")  
 	public String add_idea_renewal(@RequestBody Map<String, Object> m) {  
@@ -549,6 +569,7 @@ public class IdeasRESTful {
 
 		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
 		Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> tooltipMap = new LinkedHashMap<String, Object>();
 
 		try{
 				
@@ -556,8 +577,8 @@ public class IdeasRESTful {
 				User user = new User();
 				IdeaUpdateRecord  ideaUpdateRecord = new IdeaUpdateRecord();
 
-				user = (User) session.get(User.class, Integer.parseInt(m.get("userID").toString()));
-				idea = (Idea) session.get(Idea.class, Integer.parseInt(m.get("ideaID").toString()));
+				user = (User) session.get(User.class, Integer.parseInt(m.get("userId").toString()));
+				idea = (Idea) session.get(Idea.class, Integer.parseInt(m.get("ideaId").toString()));
 				
 				ideaUpdateRecord.setCreateTime(new Date());
 				ideaUpdateRecord.setDeleteFlag(0);
@@ -570,6 +591,12 @@ public class IdeasRESTful {
 				
 				session.save(ideaUpdateRecord);
 		        
+				 //补充添加idea，用户积分+10
+				user.setIntegral(user.getIntegral()+10);
+				session.update(user);
+				//补充添加idea,提示积分增加
+				tooltipMap.put("tooltip","+10");
+				
 		        returnMap.put("message","success");
 				returnMap.put("code","1");
 				returnMap.put("content", "");

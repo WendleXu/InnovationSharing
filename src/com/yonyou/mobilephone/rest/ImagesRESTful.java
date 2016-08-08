@@ -36,7 +36,7 @@ public class ImagesRESTful {
 
 	@POST   
 	@Path("/userPortraits")  
-	public String add_user_portrait(@HeaderParam ("userID") int userID,@HeaderParam ("fileType") String fileType,@Context HttpServletRequest request) throws IOException {  
+	public String add_user_portrait(@HeaderParam ("userId") int userId,@HeaderParam ("fileType") String fileType,@Context HttpServletRequest request) throws IOException {  
 		
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
@@ -49,7 +49,7 @@ public class ImagesRESTful {
 			InputStream in = request.getInputStream();
 
 			String filePath = "";
-			filePath = System.getProperty("csc2.root")+"images/userPortraits/"+userID+"."+fileType;
+			filePath = System.getProperty("csc2.root")+"images/userPortraits/"+userId+"."+fileType;
 
 			OutputStream bos = new FileOutputStream(filePath);// 建立一个上传文件的输出流
 			int bytesRead = 0;
@@ -64,16 +64,16 @@ public class ImagesRESTful {
                     + ":"   
                     + request.getServerPort()           //端口号  
                     + request.getContextPath()      //项目名称  
-                	+"images/userPortraits/"+userID+"."+fileType;
+                	+"images/userPortraits/"+userId+"."+fileType;
 			
-			User user = (User) session.get(User.class, userID);
+			User user = (User) session.get(User.class, userId);
 			user.setPortraitUrl(img_url_str);
 			
 			session.update(user);
 			session.getTransaction().commit();
 			
 			contentMap.put("imgType", "userPortrait");
-			contentMap.put("userID", userID);
+			contentMap.put("userId", userId);
 			contentMap.put("imgUrl", img_url_str);
 			
 		    return_map.put("message","sucess");
@@ -95,7 +95,7 @@ public class ImagesRESTful {
 	
 	@POST   
 	@Path("/ideaDescriptions")  
-	public String add_idea_Descriptions(@HeaderParam ("ideaID") int ideaID,@HeaderParam ("fileType") String fileType,@Context HttpServletRequest request) throws IOException {  
+	public String add_idea_Descriptions(@HeaderParam ("ideaId") int ideaId,@HeaderParam ("fileType") String fileType,@Context HttpServletRequest request) throws IOException {  
 		
 		Session session = HibernateSessionFactoryUtil.getSessionFactory().getCurrentSession();  
 		session.beginTransaction();
@@ -108,7 +108,7 @@ public class ImagesRESTful {
 			InputStream in = request.getInputStream();
 
 			String filePath = "";
-			filePath = System.getProperty("csc2.root")+"images/ideaDescriptions/"+ideaID+"."+fileType;
+			filePath = System.getProperty("csc2.root")+"images/ideaDescriptions/"+ideaId+"."+fileType;
 
 			OutputStream bos = new FileOutputStream(filePath);// 建立一个上传文件的输出流
 			int bytesRead = 0;
@@ -123,13 +123,13 @@ public class ImagesRESTful {
                     + ":"   
                     + request.getServerPort()           //端口号  
                     + request.getContextPath()      //项目名称  
-                	+"images/userPortraits/"+ideaID+"."+fileType;
+                	+"images/userPortraits/"+ideaId+"."+fileType;
 			
-			Idea idea = (Idea) session.get(Idea.class, ideaID);
+			Idea idea = (Idea) session.get(Idea.class, ideaId);
 			
 			IdeaImage ideaImage = new IdeaImage();
 			ideaImage.setCreateTime(new Date());
-			ideaImage.setDeleteFag(0);
+			ideaImage.setDeleteFlag(0);
 			ideaImage.setIdea(idea);
 			ideaImage.setImgUrl(img_url_str);
 			
@@ -138,9 +138,9 @@ public class ImagesRESTful {
 			session.getTransaction().commit();
 			
 			contentMap.put("imgType", "ideaDescriptions");
-			contentMap.put("ideaID", ideaID);
+			contentMap.put("ideaId", ideaId);
 			contentMap.put("imgUrl", img_url_str);
-			contentMap.put("ideaImgID", ideaImage.getIdeaImageId());
+			contentMap.put("ideaImgId", ideaImage.getIdeaImageId());
 			
 		    return_map.put("message","sucess");
 		    return_map.put("code","1");

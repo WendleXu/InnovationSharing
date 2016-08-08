@@ -17,17 +17,17 @@ import javax.persistence.Table;
  * Tag entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "tag", catalog = "innoshare")
+@Table(name = "tag", catalog = "innoShare")
 public class Tag implements java.io.Serializable {
 
 	// Fields
 
-	private Integer tagID;
+	private Integer tagId;
 	private String tagName;
-	private Integer deleteflag;
-	private Date creattime;
-	private Date lastupdatetime;
-	private Integer createrId;
+	private Integer deleteFlag;
+	private Date createTime;
+	private Date lastUpdateTime;
+	private Integer creatorId;
 	/*private Set<Ideatagmap> ideatagmaps = new HashSet<Ideatagmap>(0);
 	private Set<Projecttagmap> projecttagmaps = new HashSet<Projecttagmap>(0);*/
 
@@ -38,14 +38,14 @@ public class Tag implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	/*public Tag(String tagName, Integer deleteflag, Date creattime,
-			Date lastupdatetime, Integer createrId,
+	/*public Tag(String tagName, Integer deleteFlag, Date createTime,
+			Date lastUpdateTime, Integer creatorId,
 			Set<Ideatagmap> ideatagmaps, Set<Projecttagmap> projecttagmaps) {
 		this.tagName = tagName;
-		this.deleteflag = deleteflag;
-		this.creattime = creattime;
-		this.lastupdatetime = lastupdatetime;
-		this.createrId = createrId;
+		this.deleteFlag = deleteFlag;
+		this.createTime = createTime;
+		this.lastUpdateTime = lastUpdateTime;
+		this.creatorId = creatorId;
 		this.ideatagmaps = ideatagmaps;
 		this.projecttagmaps = projecttagmaps;
 	}*/
@@ -53,13 +53,13 @@ public class Tag implements java.io.Serializable {
 	// Property accessors
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "tagID", unique = true, nullable = false)
-	public Integer getTagID() {
-		return this.tagID;
+	@Column(name = "tagId", unique = true, nullable = false)
+	public Integer getTagId() {
+		return this.tagId;
 	}
 
-	public void setTagID(Integer tagID) {
-		this.tagID = tagID;
+	public void setTagId(Integer tagId) {
+		this.tagId = tagId;
 	}
 
 	@Column(name = "tagName", length = 32)
@@ -71,40 +71,40 @@ public class Tag implements java.io.Serializable {
 		this.tagName = tagName;
 	}
 
-	@Column(name = "deleteflag")
-	public Integer getDeleteflag() {
-		return this.deleteflag;
+	@Column(name = "deleteFlag")
+	public Integer getDeleteFlag() {
+		return this.deleteFlag;
 	}
 
-	public void setDeleteflag(Integer deleteflag) {
-		this.deleteflag = deleteflag;
+	public void setDeleteFlag(Integer deleteFlag) {
+		this.deleteFlag = deleteFlag;
 	}
 
-	@Column(name = "creattime", length = 19)
-	public Date getCreattime() {
-		return this.creattime;
+	@Column(name = "createTime", length = 19)
+	public Date getCreateTime() {
+		return this.createTime;
 	}
 
-	public void setCreattime(Date creattime) {
-		this.creattime = creattime;
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
 
-	@Column(name = "lastupdatetime", length = 19)
-	public Date getLastupdatetime() {
-		return this.lastupdatetime;
+	@Column(name = "lastUpdateTime", length = 19)
+	public Date getLastUpdateTime() {
+		return this.lastUpdateTime;
 	}
 
-	public void setLastupdatetime(Date lastupdatetime) {
-		this.lastupdatetime = lastupdatetime;
+	public void setLastUpdateTime(Date lastUpdateTime) {
+		this.lastUpdateTime = lastUpdateTime;
 	}
 
-	@Column(name = "createrID")
-	public Integer getCreaterId() {
-		return this.createrId;
+	@Column(name = "creatorId")
+	public Integer getCreatorId() {
+		return this.creatorId;
 	}
 
-	public void setCreaterId(Integer createrId) {
-		this.createrId = createrId;
+	public void setCreatorId(Integer creatorId) {
+		this.creatorId = creatorId;
 	}
 
 	/*@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "tag")

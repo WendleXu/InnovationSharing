@@ -20,7 +20,7 @@ import com.yonyou.idea.form.Idea;
  * Ideaimage entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "ideaimage", catalog = "innoshare")
+@Table(name = "ideaImage", catalog = "innoShare")
 public class IdeaImage implements java.io.Serializable {
 
 	// Fields
@@ -28,7 +28,7 @@ public class IdeaImage implements java.io.Serializable {
 	private Integer ideaImageId;
 	private Idea idea;
 	private String imgUrl;
-	private Integer deleteFag;
+	private Integer deleteFlag;
 	private Date createTime;
 	private Date lastUpdateTime;
 
@@ -39,11 +39,11 @@ public class IdeaImage implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public IdeaImage(Idea idea, String imgUrl, Integer deleteFag,
+	public IdeaImage(Idea idea, String imgUrl, Integer deleteFlag,
 			Date createTime, Date lastUpdateTime) {
 		this.idea = idea;
 		this.imgUrl = imgUrl;
-		this.deleteFag = deleteFag;
+		this.deleteFlag = deleteFlag;
 		this.createTime = createTime;
 		this.lastUpdateTime = lastUpdateTime;
 	}
@@ -51,7 +51,7 @@ public class IdeaImage implements java.io.Serializable {
 	// Property accessors
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "ideaImageID", unique = true, nullable = false)
+	@Column(name = "ideaImageId", unique = true, nullable = false)
 	public Integer getIdeaImageId() {
 		return this.ideaImageId;
 	}
@@ -61,7 +61,7 @@ public class IdeaImage implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ideaID")
+	@JoinColumn(name = "ideaId")
 	public Idea getIdea() {
 		return this.idea;
 	}
@@ -70,7 +70,7 @@ public class IdeaImage implements java.io.Serializable {
 		this.idea = idea;
 	}
 
-	@Column(name = "imgURL")
+	@Column(name = "imgUrl")
 	public String getImgUrl() {
 		return this.imgUrl;
 	}
@@ -79,13 +79,13 @@ public class IdeaImage implements java.io.Serializable {
 		this.imgUrl = imgUrl;
 	}
 
-	@Column(name = "deleteFag")
-	public Integer getDeleteFag() {
-		return this.deleteFag;
+	@Column(name = "deleteFlag")
+	public Integer getDeleteFlag() {
+		return this.deleteFlag;
 	}
 
-	public void setDeleteFag(Integer deleteFag) {
-		this.deleteFag = deleteFag;
+	public void setDeleteFlag(Integer deleteFlag) {
+		this.deleteFlag = deleteFlag;
 	}
 
 	@Column(name = "createTime", length = 19)
