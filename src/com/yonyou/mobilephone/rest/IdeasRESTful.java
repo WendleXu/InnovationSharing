@@ -38,6 +38,8 @@ import com.yonyou.idea.form.Idea;
 import com.yonyou.idea.form.IdeaTagMap;
 import com.yonyou.idea.form.IdeaUpdateRecord;
 import com.yonyou.image.form.IdeaImage;
+import com.yonyou.integral.form.IntegralLevel;
+import com.yonyou.integral.service.impl.IntegralServiceImpl;
 import com.yonyou.record.form.IdeaFaviourRecord;
 import com.yonyou.tag.form.Tag;
 import com.yonyou.user.form.User;
@@ -82,6 +84,7 @@ public class IdeasRESTful {
 		}finally{
 				
 				session.getTransaction().commit();
+				 
 		}
 			
 		
@@ -129,6 +132,7 @@ public class IdeasRESTful {
 		}finally{
 				
 				session.getTransaction().commit();
+				 
 		}
 			
 		
@@ -159,26 +163,57 @@ public class IdeasRESTful {
 		try{
 			
 			
-			Criteria c=session.createCriteria(Idea.class);
+			List<Idea> ideaList = new ArrayList<Idea>();
 			if(request.getParameter("country")!=null && !request.getParameter("country").equals(""))
 			{
+				Criteria c=session.createCriteria(Idea.class);
 				c.add(Restrictions.eq("country",request.getParameter("country")));//eq是等于，gt是大于，lt是小于,or是或
-			}
-			
-			if(request.getParameter("tagId")!=null && !request.getParameter("tagId").equals(""))
-			{
-				c.add(Restrictions.eq("tagId", request.getParameter("tagId")));
-			}
-			c.add(Restrictions.eq("deleteFlag", 0));
-			c.addOrder(Order.desc("createTime"));
-			
-			
-			c.setProjection(Projections.rowCount());
-			c.setProjection(null);
+				c.add(Restrictions.eq("deleteFlag", 0));
+				c.addOrder(Order.desc("createTime"));
+				
+				
+				c.setProjection(Projections.rowCount());
+				c.setProjection(null);
 
-			c.setFirstResult((10)*(Integer.parseInt(request.getParameter("pageNo"))-1));
-			c.setMaxResults(10);
-			List<Idea> ideaList=c.list();
+				c.setFirstResult((10)*(Integer.parseInt(request.getParameter("pageNo"))-1));
+				c.setMaxResults(10);
+				ideaList=c.list();
+			}else if(request.getParameter("tagId")!=null && !request.getParameter("tagId").equals(""))
+			{
+				List<IdeaTagMap> ideaTagMaps = new ArrayList<IdeaTagMap>();
+				Criteria c=session.createCriteria(IdeaTagMap.class);
+				c.add(Restrictions.eq("tag", session.get(Tag.class, Integer.parseInt(request.getParameter("tagId")))));
+				
+				c.add(Restrictions.eq("deleteFlag", 0));
+				c.addOrder(Order.desc("createTime"));
+				
+				
+				c.setProjection(Projections.rowCount());
+				c.setProjection(null);
+
+				c.setFirstResult((10)*(Integer.parseInt(request.getParameter("pageNo"))-1));
+				c.setMaxResults(10);
+				ideaTagMaps=c.list();
+				
+				for(int i=0;i<ideaTagMaps.size();i++)
+				{
+					ideaList.add(ideaTagMaps.get(i).getIdea());
+				}
+			}else{
+				Criteria c=session.createCriteria(Idea.class);
+				//c.add(Restrictions.eq("country",request.getParameter("country")));//eq是等于，gt是大于，lt是小于,or是或
+				c.add(Restrictions.eq("deleteFlag", 0));
+				c.addOrder(Order.desc("createTime"));
+				
+				
+				c.setProjection(Projections.rowCount());
+				c.setProjection(null);
+
+				c.setFirstResult((10)*(Integer.parseInt(request.getParameter("pageNo"))-1));
+				c.setMaxResults(10);
+				ideaList=c.list();
+			}
+			
 			
 			
 			contentMap.put("ideas",ideaList);
@@ -192,6 +227,7 @@ public class IdeasRESTful {
 		}finally{
 				
 				session.getTransaction().commit();
+				 
 		}
 			
 		
@@ -273,6 +309,7 @@ public class IdeasRESTful {
 		}finally{
 				
 				session.getTransaction().commit();
+				 
 				returnMap.put("message","success");
 				returnMap.put("code","1");
 		}
@@ -325,8 +362,7 @@ public class IdeasRESTful {
 			
 				session.save(idea);
 				
-		        JSONArray jsonArray = JSONArray.fromObject(m.get("tags"));  
-		        System.out.println(jsonArray);  
+		        JSONArray jsonArray = JSONArray.fromObject(m.get("tags"));   
 		        List list = (List)JSONArray.toList(jsonArray, Tag.class);
 		        Iterator it = list.iterator();  
 		        while(it.hasNext()){  
@@ -340,8 +376,20 @@ public class IdeasRESTful {
 		            session.save(ideaTagMap);
 		        }  
 		        
+		        IntegralLevel integralOldLevel = IntegralServiceImpl.get_user_integral_level(user);
 		        //添加idea，用户积分+10
 				user.setIntegral(user.getIntegral()+10);
+				IntegralLevel integralNewLevel = IntegralServiceImpl.get_user_integral_level(user);
+				
+				if(!integralOldLevel.getLevel().equals(integralNewLevel.getLevel()))
+				{
+					tooltipMap.put("isLevelUp",1);
+					tooltipMap.put("currentLevel", integralNewLevel.getLevel());
+				}else{
+					tooltipMap.put("isLevelUp",0);
+					tooltipMap.put("currentLevel", integralNewLevel.getLevel());
+				}
+				
 				session.update(user);
 				//添加idea，提示积分增加
 				tooltipMap.put("tooltip","+10");
@@ -353,6 +401,7 @@ public class IdeasRESTful {
 		}finally{
 				
 				session.getTransaction().commit();
+				 
 		}
 			
 		JSONObject jsonObject = JSONObject.fromObject(returnMap);
@@ -435,9 +484,23 @@ public class IdeasRESTful {
 										
 					//idea点赞，提示积分+1
 					tooltipMap.put("tooltip","+1");
-					//idea点赞，用户积分+1
+					
 					User user = (User) session.get(User.class, Integer.parseInt(m.get("userId").toString()));
-					user.setIntegral(user.getIntegral()+1);
+					
+					IntegralLevel integralOldLevel = IntegralServiceImpl.get_user_integral_level(user);
+					//idea点赞，用户积分+1
+					user.setIntegral(user.getIntegral()+1);		
+					IntegralLevel integralNewLevel = IntegralServiceImpl.get_user_integral_level(user);
+					
+					if(!integralOldLevel.getLevel().equals(integralNewLevel.getLevel()))
+					{
+						tooltipMap.put("isLevelUp",1);
+						tooltipMap.put("currentLevel", integralNewLevel.getLevel());
+					}else{
+						tooltipMap.put("isLevelUp",0);
+						tooltipMap.put("currentLevel", integralNewLevel.getLevel());
+					}
+					
 					session.update(user);
 					
 				}
@@ -591,15 +654,29 @@ public class IdeasRESTful {
 				
 				session.save(ideaUpdateRecord);
 		        
-				 //补充添加idea，用户积分+10
-				user.setIntegral(user.getIntegral()+10);
+				IntegralLevel integralOldLevel = IntegralServiceImpl.get_user_integral_level(user);
+				 //补充添加idea，用户积分+5
+				user.setIntegral(user.getIntegral()+5);			
+				IntegralLevel integralNewLevel = IntegralServiceImpl.get_user_integral_level(user);
+				
+				if(!integralOldLevel.getLevel().equals(integralNewLevel.getLevel()))
+				{
+					tooltipMap.put("isLevelUp",1);
+					tooltipMap.put("currentLevel", integralNewLevel.getLevel());
+				}else{
+					tooltipMap.put("isLevelUp",0);
+					tooltipMap.put("currentLevel", integralNewLevel.getLevel());
+				}
+				
 				session.update(user);
 				//补充添加idea,提示积分增加
-				tooltipMap.put("tooltip","+10");
+				tooltipMap.put("tooltip","+5");
+				
+				
 				
 		        returnMap.put("message","success");
 				returnMap.put("code","1");
-				returnMap.put("content", "");
+				returnMap.put("content", tooltipMap);
 				   
 		}finally{
 				

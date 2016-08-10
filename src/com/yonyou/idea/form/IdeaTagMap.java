@@ -64,7 +64,7 @@ public class IdeaTagMap implements Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ideaId")
 	public Idea getIdea() {
 		return this.idea;

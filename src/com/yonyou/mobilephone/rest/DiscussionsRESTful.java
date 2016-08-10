@@ -33,12 +33,15 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.web.bind.annotation.RequestBody;
+
 import com.mchange.v2.codegen.bean.BeangenUtils;
 import com.yonyou.discussion.form.IdeaDiscussion;
 import com.yonyou.discussion.form.IdeaDiscussionCopy;
 import com.yonyou.idea.form.Idea;
 import com.yonyou.idea.form.IdeaTagMap;
 import com.yonyou.image.form.IdeaImage;
+import com.yonyou.integral.form.IntegralLevel;
+import com.yonyou.integral.service.impl.IntegralServiceImpl;
 import com.yonyou.record.form.DiscussionFaviourRecord;
 import com.yonyou.record.form.IdeaFaviourRecord;
 import com.yonyou.tag.form.Tag;
@@ -80,8 +83,22 @@ public class DiscussionsRESTful {
 				idea.setCommentCount(idea.getCommentCount()+1);
 				session.update(idea);
 				
+				IntegralLevel integralOldLevel = IntegralServiceImpl.get_user_integral_level(user);
 				//添加评论，用户积分+1
 				user.setIntegral(user.getIntegral()+1);
+				
+				IntegralLevel integralNewLevel = IntegralServiceImpl.get_user_integral_level(user);
+				
+				if(!integralOldLevel.getLevel().equals(integralNewLevel.getLevel()))
+				{
+					tooltipMap.put("isLevelUp",1);
+					tooltipMap.put("currentLevel", integralNewLevel.getLevel());
+				}else{
+					tooltipMap.put("isLevelUp",0);
+					tooltipMap.put("currentLevel", integralNewLevel.getLevel());
+				}
+				
+				
 				session.update(user);
 				//新增评论提示积分增加
 				tooltipMap.put("tooltip","+1");
@@ -93,6 +110,7 @@ public class DiscussionsRESTful {
 		}finally{
 				
 				session.getTransaction().commit();
+				 
 		}
 			
 		JSONObject jsonObject = JSONObject.fromObject(returnMap);
@@ -118,7 +136,7 @@ public class DiscussionsRESTful {
 				
 				c.add(Restrictions.eq("idea",idea));
 				c.add(Restrictions.eq("fatherId",0));
-				c.addOrder(Order.desc("createTime"));
+				c.addOrder(Order.asc("createTime"));
 				
 				List<Map<String,Object>> ideaAllDiscussionList = new ArrayList<Map<String,Object>>();
 				List<IdeaDiscussion> ideaTopDiscussionList= new ArrayList<IdeaDiscussion>();
@@ -153,7 +171,7 @@ public class DiscussionsRESTful {
 					c=session.createCriteria(IdeaDiscussion.class);
 					c.add(Restrictions.eq("idea",idea));
 					c.add(Restrictions.eq("fatherId",ideaTopDiscussionList.get(i).getDiscussionId()));
-					c.addOrder(Order.desc("createTime"));
+					c.addOrder(Order.asc("createTime"));
 					
 					List<IdeaDiscussion> ideaSonDiscussionList = new ArrayList<IdeaDiscussion>();
 					List<IdeaDiscussionCopy> ideaSonDiscussionListCopy = new ArrayList<IdeaDiscussionCopy>();
@@ -189,6 +207,7 @@ public class DiscussionsRESTful {
 		}finally{
 				
 				session.getTransaction().commit();
+				 
 		}
 			
 		//JSONObject jsonObject = JSONObject.fromObject(returnMap);
@@ -233,7 +252,7 @@ public class DiscussionsRESTful {
 				   
 		}finally{
 				
-				session.getTransaction().commit();
+				session.getTransaction().commit(); 
 				returnMap.put("message","success");
 				returnMap.put("code","1");
 				returnMap.put("content", contentMap);
@@ -274,7 +293,7 @@ public class DiscussionsRESTful {
 				   
 		}finally{
 				
-				session.getTransaction().commit();
+				session.getTransaction().commit(); 
 				returnMap.put("message","success");
 				returnMap.put("code","1");
 				returnMap.put("content", contentMap);
@@ -328,8 +347,21 @@ public class DiscussionsRESTful {
 					session.save(discussionFaviourRecord);
 					
 					User user = (User) session.get(User.class, Integer.parseInt(m.get("userId").toString()));
+					
+					IntegralLevel integralOldLevel = IntegralServiceImpl.get_user_integral_level(user);
 					//评论点赞，用户积分+1
-					user.setIntegral(user.getIntegral()+1);
+					user.setIntegral(user.getIntegral()+1);	
+					IntegralLevel integralNewLevel = IntegralServiceImpl.get_user_integral_level(user);
+					
+					if(!integralOldLevel.getLevel().equals(integralNewLevel.getLevel()))
+					{
+						tooltipMap.put("isLevelUp",1);
+						tooltipMap.put("currentLevel", integralNewLevel.getLevel());
+					}else{
+						tooltipMap.put("isLevelUp",0);
+						tooltipMap.put("currentLevel", integralNewLevel.getLevel());
+					}
+					
 					//评论点赞，提示积分增加
 					tooltipMap.put("tooltip","+1");		
 					session.update(user);
@@ -365,7 +397,7 @@ public class DiscussionsRESTful {
 				   
 		}finally{
 				
-				session.getTransaction().commit();
+				session.getTransaction().commit(); 
 		}
 			
 		

@@ -12,7 +12,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "integralLevel", catalog = "innoShare")
-public class Integrallevel implements java.io.Serializable {
+public class IntegralLevel implements java.io.Serializable {
 
 	// Fields
 
@@ -25,11 +25,11 @@ public class Integrallevel implements java.io.Serializable {
 	// Constructors
 
 	/** default constructor */
-	public Integrallevel() {
+	public IntegralLevel() {
 	}
 
 	/** full constructor */
-	public Integrallevel(Integer integralDown, Integer integralUp, String level,String nextLevel) {
+	public IntegralLevel(Integer integralDown, Integer integralUp, String level,String nextLevel) {
 		this.integralDown = integralDown;
 		this.integralUp = integralUp;
 		this.level = level;

@@ -70,7 +70,7 @@ public class ImagesRESTful {
 			user.setPortraitUrl(img_url_str);
 			
 			session.update(user);
-			session.getTransaction().commit();
+			
 			
 			contentMap.put("imgType", "userPortrait");
 			contentMap.put("userId", userId);
@@ -83,6 +83,9 @@ public class ImagesRESTful {
 
 			   
 		}finally{
+			
+			session.getTransaction().commit();
+			 
 			
 		}
 		
@@ -135,7 +138,6 @@ public class ImagesRESTful {
 			
 			
 			session.save(ideaImage);
-			session.getTransaction().commit();
 			
 			contentMap.put("imgType", "ideaDescriptions");
 			contentMap.put("ideaId", ideaId);
@@ -150,6 +152,8 @@ public class ImagesRESTful {
 			   
 		}finally{
 			
+			session.getTransaction().commit();
+			 
 		}
 		
 		

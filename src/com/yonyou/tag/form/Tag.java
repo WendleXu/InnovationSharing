@@ -28,10 +28,13 @@ public class Tag implements java.io.Serializable {
 	private Date createTime;
 	private Date lastUpdateTime;
 	private Integer creatorId;
+	private Integer updatorId;
 	/*private Set<Ideatagmap> ideatagmaps = new HashSet<Ideatagmap>(0);
 	private Set<Projecttagmap> projecttagmaps = new HashSet<Projecttagmap>(0);*/
 
 	// Constructors
+
+	
 
 	/** default constructor */
 	public Tag() {
@@ -105,6 +108,14 @@ public class Tag implements java.io.Serializable {
 
 	public void setCreatorId(Integer creatorId) {
 		this.creatorId = creatorId;
+	}
+	@Column(name = "updatorId")
+	public Integer getUpdatorId() {
+		return updatorId;
+	}
+
+	public void setUpdatorId(Integer updatorId) {
+		this.updatorId = updatorId;
 	}
 
 	/*@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "tag")
